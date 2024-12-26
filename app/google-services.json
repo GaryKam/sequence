@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "922344290840",
+    "project_id": "sequence-2b347",
+    "storage_bucket": "sequence-2b347.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:922344290840:android:0319352d52550cb583616d",
+        "android_client_info": {
+          "package_name": "io.github.garykam.sequence"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLzQA8ZVJU012Ty5ERFaf0dL5J-yMh6wA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
