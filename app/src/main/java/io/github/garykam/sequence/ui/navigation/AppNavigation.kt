@@ -34,7 +34,7 @@ fun AppNavigation(
 
             composable<JoinGame> {
                 JoinGameScreen(
-
+                    modifier = Modifier.fillMaxSize()
                 )
             }
 
