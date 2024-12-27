@@ -6,5 +6,5 @@ import io.github.garykam.sequence.game.GameBoard
 
 @Composable
 fun JoinGameScreen(modifier: Modifier = Modifier) {
-    GameBoard(modifier = modifier)
+    GameBoard()
 }
