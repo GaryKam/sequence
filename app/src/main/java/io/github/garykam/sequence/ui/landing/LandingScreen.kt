@@ -1,4 +1,4 @@
-package io.github.garykam.sequence.ui.navigation.landing
+package io.github.garykam.sequence.ui.landing
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

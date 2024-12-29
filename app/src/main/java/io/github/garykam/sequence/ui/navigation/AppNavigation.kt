@@ -9,14 +9,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import io.github.garykam.sequence.ui.navigation.creategame.CreateGameScreen
-import io.github.garykam.sequence.ui.navigation.joingame.JoinGameScreen
-import io.github.garykam.sequence.ui.navigation.landing.LandingScreen
+import io.github.garykam.sequence.ui.creategame.CreateGameScreen
+import io.github.garykam.sequence.ui.game.GameScreen
+import io.github.garykam.sequence.ui.joingame.JoinGameScreen
+import io.github.garykam.sequence.ui.landing.LandingScreen
 
 @Composable
 fun AppNavigation(
     navController: NavHostController = rememberNavController(),
-    startDestination: Destination = Landing
+    startDestination: Destination = Game
 ) {
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         NavHost(
@@ -33,14 +34,16 @@ fun AppNavigation(
             }
 
             composable<JoinGame> {
-                JoinGameScreen(
-                    modifier = Modifier.fillMaxSize()
-                )
+                JoinGameScreen()
             }
 
             composable<CreateGame> {
-                CreateGameScreen(
+                CreateGameScreen()
+            }
 
+            composable<Game> {
+                GameScreen(
+                    modifier = Modifier.fillMaxSize()
                 )
             }
         }

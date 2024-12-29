@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.compose.compiler)
     id("com.google.gms.google-services")
     id("org.jetbrains.kotlin.plugin.serialization")
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -52,6 +54,8 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+
 }
 
 dependencies {
@@ -59,6 +63,8 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

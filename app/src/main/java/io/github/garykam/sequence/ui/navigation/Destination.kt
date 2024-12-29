@@ -12,3 +12,6 @@ data object JoinGame : Destination()
 
 @Serializable
 data object CreateGame : Destination()
+
+@Serializable
+data object Game : Destination()
