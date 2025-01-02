@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.garykam.sequence.database.Database
 import io.github.garykam.sequence.util.Card
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,8 +32,8 @@ class GameViewModel @Inject constructor() : ViewModel() {
     private var _hand = MutableStateFlow(listOf<Card>())
     val hand = _hand.asStateFlow()
 
-    private var _activeCard = MutableStateFlow("")
-    val activeCard = _activeCard.asStateFlow()
+    private var _activeCardIndex: MutableStateFlow<Int?> = MutableStateFlow(null)
+    val activeCardIndex = _activeCardIndex.asStateFlow()
 
     private var _jackCards = mutableSetOf<Card>()
 
@@ -52,7 +53,7 @@ class GameViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun getRandomHand() {
+    fun dealCards() {
         val availableCards = (_board.value + _jackCards).filter { it.name != "b" }
         _hand.update {
             buildList {
@@ -63,7 +64,15 @@ class GameViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun selectCardFromHand(cardName: String) {
-        _activeCard.update { cardName }
+    fun selectCardFromHand(cardIndex: Int) {
+        if (_activeCardIndex.value == cardIndex) {
+            _activeCardIndex.update { null }
+        } else {
+            _activeCardIndex.update { cardIndex }
+        }
+    }
+
+    fun placeMarkerChip(boardIndex: Int) {
+        Database.addMove(boardIndex, "R")
     }
 }
