@@ -90,6 +90,7 @@ fun GameBoard(
                             "R" -> Color.Red
                             "G" -> Color.Green
                             "B" -> Color.Blue
+                            "P" -> Color(-8388480)
                             else -> {
                                 Color.Black
                             }
@@ -99,7 +100,10 @@ fun GameBoard(
                             painter = painterResource(R.drawable.chip),
                             contentDescription = "marker chip",
                             modifier = Modifier.scale(0.9f),
-                            colorFilter = ColorFilter.lighting(Color.White, markerChipColor)
+                            colorFilter = ColorFilter.lighting(
+                                multiply = Color.White,
+                                add = markerChipColor
+                            )
                         )
                     }
                 }

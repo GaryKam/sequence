@@ -1,8 +1,6 @@
 package io.github.garykam.sequence.ui.navigation
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -17,35 +15,38 @@ import io.github.garykam.sequence.ui.landing.LandingScreen
 @Composable
 fun AppNavigation(
     navController: NavHostController = rememberNavController(),
-    startDestination: Destination = Game
+    startDestination: Destination = Landing
 ) {
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = startDestination,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable<Landing> {
-                LandingScreen(
-                    modifier = Modifier.fillMaxSize(),
-                    onJoinGameClick = { navController.navigate(JoinGame) },
-                    onCreateGameClick = { navController.navigate(CreateGame) }
-                )
-            }
+    NavHost(
+        navController = navController,
+        startDestination = startDestination
+    ) {
+        composable<Landing> {
+            LandingScreen(
+                modifier = Modifier.fillMaxSize(),
+                onJoinGameClick = { navController.navigate(JoinGame) },
+                onCreateGameClick = { navController.navigate(CreateGame) }
+            )
+        }
 
-            composable<JoinGame> {
-                JoinGameScreen()
-            }
+        composable<JoinGame> {
+            JoinGameScreen(
+                modifier = Modifier.fillMaxSize(),
+                onBack = { navController.navigate(Landing) }
+            )
+        }
 
-            composable<CreateGame> {
-                CreateGameScreen()
-            }
+        composable<CreateGame> {
+            CreateGameScreen(
+                modifier = Modifier.fillMaxSize(),
+                onBack = { navController.navigate(Landing) }
+            )
+        }
 
-            composable<Game> {
-                GameScreen(
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
+        composable<Game> {
+            GameScreen(
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }

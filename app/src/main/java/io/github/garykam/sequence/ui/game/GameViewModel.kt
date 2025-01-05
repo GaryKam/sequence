@@ -73,6 +73,6 @@ class GameViewModel @Inject constructor() : ViewModel() {
     }
 
     fun placeMarkerChip(boardIndex: Int) {
-        Database.addMove(boardIndex, "R")
+        Database.addMove(boardIndex, "P")
     }
 }
