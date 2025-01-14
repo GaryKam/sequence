@@ -34,7 +34,7 @@ fun AppNavigation(
             JoinGameScreen(
                 modifier = Modifier.fillMaxSize(),
                 onBack = { navController.navigate(Landing) },
-                onGameStart = { navController.navigate(it) }
+                onGameStart = { navController.navigate(Game(it)) }
             )
         }
 
@@ -42,7 +42,7 @@ fun AppNavigation(
             CreateGameScreen(
                 modifier = Modifier.fillMaxSize(),
                 onBack = { navController.navigate(Landing) },
-                onGameStart = { navController.navigate(it) }
+                onGameStart = { navController.navigate(Game(it)) }
             )
         }
 
