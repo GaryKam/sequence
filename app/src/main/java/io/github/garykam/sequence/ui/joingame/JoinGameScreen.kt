@@ -18,12 +18,11 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
@@ -39,12 +38,10 @@ import io.github.garykam.sequence.ui.components.MarkerChipSelection
 fun JoinGameScreen(
     modifier: Modifier = Modifier,
     viewModel: JoinGameViewModel = viewModel(),
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onGameStart: (String) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
-    val lobbyCode by viewModel.lobbyCode.collectAsState()
-    val markerChips by viewModel.markerChips.collectAsState()
-    val markerChipIndex by viewModel.markerChipIndex.collectAsState()
 
     Scaffold(
         modifier = modifier.pointerInput(Unit) {
@@ -62,6 +59,7 @@ fun JoinGameScreen(
                         onClick = {
                             focusManager.clearFocus()
                             onBack()
+                            viewModel.leaveLobby()
                         }
                     ) {
                         Icon(
@@ -81,9 +79,9 @@ fun JoinGameScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AnimatedVisibility(visible = markerChips.isEmpty()) {
+            AnimatedVisibility(visible = viewModel.step == Step.FIND_LOBBY) {
                 OutlinedTextField(
-                    value = lobbyCode,
+                    value = viewModel.lobbyCode,
                     onValueChange = { viewModel.updateLobbyCode(it) },
                     label = { Text(text = "Lobby Code") },
                     keyboardOptions = KeyboardOptions(
@@ -95,26 +93,34 @@ fun JoinGameScreen(
                     )
                 )
             }
-            AnimatedVisibility(visible = markerChips.isNotEmpty()) {
+            AnimatedVisibility(visible = viewModel.step == Step.SELECT_CHIP) {
                 MarkerChipSelection(
                     modifier = Modifier.fillMaxWidth(),
-                    items = markerChips,
-                    selected = markerChipIndex,
+                    items = viewModel.markerChips,
+                    selected = viewModel.markerChipIndex,
                     onClick = { viewModel.selectMarkerChip(it) }
                 )
             }
             Spacer(modifier = Modifier.height(40.dp))
-            Button(
-                onClick = {
-                    if (markerChips.isEmpty()) {
-                        viewModel.findLobby()
-                    } else {
-                        viewModel.joinLobby()
-                    }
-                },
-                modifier = Modifier.padding(horizontal = 40.dp)
-            ) {
-                Text(text = "Join Lobby")
+            AnimatedVisibility(visible = viewModel.step != Step.WAIT_IN_LOBBY) {
+                Button(
+                    onClick = {
+                        if (viewModel.step == Step.FIND_LOBBY) {
+                            viewModel.findLobby()
+                        } else {
+                            viewModel.joinLobby(onGameStart = onGameStart)
+                        }
+                    },
+                    modifier = Modifier.padding(horizontal = 40.dp)
+                ) {
+                    Text(text = "Join Lobby")
+                }
+            }
+            AnimatedVisibility(visible = viewModel.step == Step.WAIT_IN_LOBBY) {
+                Text(
+                    text = "Waiting for host...",
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
     }

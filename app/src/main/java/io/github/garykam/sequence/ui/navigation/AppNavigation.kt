@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import io.github.garykam.sequence.ui.creategame.CreateGameScreen
 import io.github.garykam.sequence.ui.game.GameScreen
 import io.github.garykam.sequence.ui.joingame.JoinGameScreen
@@ -32,20 +33,23 @@ fun AppNavigation(
         composable<JoinGame> {
             JoinGameScreen(
                 modifier = Modifier.fillMaxSize(),
-                onBack = { navController.navigate(Landing) }
+                onBack = { navController.navigate(Landing) },
+                onGameStart = { navController.navigate(it) }
             )
         }
 
         composable<CreateGame> {
             CreateGameScreen(
                 modifier = Modifier.fillMaxSize(),
-                onBack = { navController.navigate(Landing) }
+                onBack = { navController.navigate(Landing) },
+                onGameStart = { navController.navigate(it) }
             )
         }
 
-        composable<Game> {
+        composable<Game> { backStackEntry ->
             GameScreen(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                lobbyCode = (backStackEntry.toRoute() as Game).lobbyCode
             )
         }
     }

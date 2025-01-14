@@ -16,7 +16,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @Composable
 fun GameScreen(
     modifier: Modifier = Modifier,
-    viewModel: GameViewModel = viewModel()
+    viewModel: GameViewModel = viewModel(),
+    lobbyCode: String
 ) {
     val context = LocalContext.current
     LaunchedEffect(Unit) {

@@ -8,8 +8,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 object Database {
     private val firebase = Firebase.database
     val gamesRef = firebase.getReference("games")
+
     private var _moves = MutableStateFlow(emptyMap<String, String>())
     val moves = _moves
+
+    private var _lobbyCode = ""
 
     init {
         /*movesRef.setValue(null)
@@ -28,14 +31,29 @@ object Database {
         lobbyCode: String,
         hostColor: String
     ) {
+        _lobbyCode = lobbyCode
         gamesRef.child(lobbyCode).setValue(Game(hostColor))
+    }
+
+    fun closeLobby() {
+        gamesRef.child(_lobbyCode).removeValue()
     }
 
     fun joinLobby(
         lobbyCode: String,
         guestColor: String
     ) {
+        _lobbyCode = lobbyCode
         gamesRef.child(lobbyCode).child("guest").setValue(guestColor)
+    }
+
+    fun leaveLobby() {
+        gamesRef.child(_lobbyCode).child("guest").removeValue()
+    }
+
+    fun startGame(): String {
+        gamesRef.child(_lobbyCode).child("moves").setValue("")
+        return _lobbyCode
     }
 
     fun addMove(

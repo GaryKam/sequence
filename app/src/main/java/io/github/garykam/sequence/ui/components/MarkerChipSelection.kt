@@ -50,7 +50,11 @@ fun MarkerChipSelection(
                         modifier = Modifier
                             .border(
                                 width = 2.dp,
-                                color = if (index == selected) Color.Black else Color.Transparent,
+                                color = if (index == selected) {
+                                    MaterialTheme.colorScheme.onBackground
+                                } else {
+                                    Color.Transparent
+                                },
                                 shape = CircleShape
                             )
                             .padding(5.dp)

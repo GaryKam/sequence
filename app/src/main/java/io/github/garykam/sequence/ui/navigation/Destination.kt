@@ -14,4 +14,4 @@ data object JoinGame : Destination()
 data object CreateGame : Destination()
 
 @Serializable
-data object Game : Destination()
+data class Game(val lobbyCode: String) : Destination()
