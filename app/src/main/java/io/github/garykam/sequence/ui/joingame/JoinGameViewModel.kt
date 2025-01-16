@@ -30,6 +30,8 @@ class JoinGameViewModel @Inject constructor() : ViewModel() {
     var markerChipIndex by mutableIntStateOf(0)
         private set
 
+    private lateinit var _gameListener: ValueEventListener
+
     fun updateLobbyCode(code: String) {
         lobbyCode = code.trim()
     }
@@ -63,22 +65,23 @@ class JoinGameViewModel @Inject constructor() : ViewModel() {
         Database.joinLobby(markerChips[markerChipIndex].shortName)
         step = Step.WAIT_IN_LOBBY
 
-        Database.gameRef.addValueEventListener(
-            object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.hasChild("turn")) {
-                        onGameStart()
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
+        _gameListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.hasChild("turn")) {
+                    Database.gameRef.removeEventListener(_gameListener)
+                    onGameStart()
                 }
             }
-        )
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        }
+        Database.gameRef.addValueEventListener(_gameListener)
     }
 
     fun leaveLobby() {
+        Database.gameRef.removeEventListener(_gameListener)
         Database.leaveLobby()
     }
 }

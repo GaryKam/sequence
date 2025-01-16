@@ -75,7 +75,11 @@ fun GameBoard(
                         Image(
                             painter = painterResource(card.drawableId),
                             contentDescription = card.name,
-                            modifier = Modifier.clickable { viewModel.placeMarkerChip(index) },
+                            modifier = Modifier.clickable(
+                                interactionSource = null,
+                                indication = null,
+                                onClick = { viewModel.placeMarkerChip(index) }
+                            ),
                             colorFilter = ColorFilter.tint(
                                 color = cardTint.copy(alpha = 0.4f),
                                 blendMode = BlendMode.Darken

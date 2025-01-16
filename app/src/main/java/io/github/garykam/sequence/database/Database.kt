@@ -1,8 +1,10 @@
 package io.github.garykam.sequence.database
 
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.GenericTypeIndicator
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import io.github.garykam.sequence.util.Card
 import io.github.garykam.sequence.util.Game
 import io.github.garykam.sequence.util.Host
 import kotlinx.coroutines.tasks.await
@@ -67,18 +69,13 @@ object Database {
             return
         }
 
-        val deck = cards.toMutableList()
+        val deck = cards.shuffled().toMutableList()
         val hostHand = mutableListOf<String>()
         val guestHand = mutableListOf<String>()
 
         repeat(7) {
-            var card = deck.random()
-            hostHand.add(card)
-            deck.remove(card)
-
-            card = deck.random()
-            guestHand.add(card)
-            deck.remove(card)
+            hostHand.add(deck.removeFirstOrNull()!!)
+            guestHand.add(deck.removeFirstOrNull()!!)
         }
 
         gameRef.child("deck").setValue(deck)
@@ -86,7 +83,33 @@ object Database {
         gameRef.child("guest/hand").setValue(guestHand)
     }
 
-    fun setMoves(moves: Map<String, String>) {
-        gameRef.child("moves").setValue(moves)
+    suspend fun addMove(
+        newMove: Pair<String, String>,
+        currentMoves: Map<String, String>,
+        hand: List<Card>,
+        cardIndex: Int
+    ) {
+        val deck = gameRef.child("deck")
+            .get()
+            .await()
+            .getValue(object : GenericTypeIndicator<List<String>>() {})
+            .orEmpty()
+        val newDeck = deck.toMutableList()
+        val nextCard = newDeck.removeFirstOrNull()
+        val newHand = hand
+            .map { it.name }
+            .toMutableList()
+            .apply {
+                if (nextCard != null) {
+                    this[cardIndex] = nextCard
+                }
+            }
+        val update = hashMapOf(
+            "moves" to currentMoves + newMove,
+            "turn" to if (userRole == "host") "guest" else "host",
+            "deck" to newDeck,
+            "$userRole/hand" to newHand
+        )
+        gameRef.updateChildren(update)
     }
 }

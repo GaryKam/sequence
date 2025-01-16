@@ -9,9 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.github.garykam.sequence.R
 
 @Composable
 fun GameScreen(
@@ -33,7 +34,7 @@ fun GameScreen(
             modifier = Modifier
                 .weight(0.85f)
                 .fillMaxSize()
-                .background(Color(51, 101, 77)),
+                .background(colorResource(R.color.board)),
             viewModel = viewModel
         )
 
@@ -41,7 +42,7 @@ fun GameScreen(
             modifier = Modifier
                 .weight(0.15f)
                 .fillMaxWidth()
-                .background(Color(51, 101, 77)),
+                .background(colorResource(R.color.board)),
             viewModel = viewModel
         )
     }

@@ -6,17 +6,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.getValue
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.garykam.sequence.database.Database
-import io.github.garykam.sequence.database.Database.userColor
 import io.github.garykam.sequence.util.Card
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,6 +47,9 @@ class GameViewModel @Inject constructor() : ViewModel() {
 
     private var _hand = MutableStateFlow(listOf<Card>())
     val hand = _hand.asStateFlow()
+
+    private var _turn = MutableStateFlow("")
+    val turn = _turn.asStateFlow()
 
     private var _jackCards = mutableSetOf<Card>()
 
@@ -77,7 +82,7 @@ class GameViewModel @Inject constructor() : ViewModel() {
         val cards = (_boardSetup + jackNames - setOf("b"))
         Database.setupDeckAndHands(cards)
 
-        // Server: deal player hand.
+        // Server: listen for hand.
         Database.gameRef.child("${Database.userRole}/hand").addValueEventListener(
             object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -86,8 +91,8 @@ class GameViewModel @Inject constructor() : ViewModel() {
                     _hand.update {
                         buildList {
                             for (cardName in hand) {
-                                val card = _board.value.first { it.name == cardName }
-                                add(card)
+                                val card = _board.value.firstOrNull { it.name == cardName }
+                                card?.let { add(it) }
                             }
                         }
                     }
@@ -111,6 +116,19 @@ class GameViewModel @Inject constructor() : ViewModel() {
                 }
             }
         )
+
+        // Server: listen for turn.
+        Database.gameRef.child("turn").addValueEventListener(
+            object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    _turn.update { snapshot.getValue<String>().orEmpty() }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+            }
+        )
     }
 
     fun selectCardFromHand(cardIndex: Int) {
@@ -122,7 +140,14 @@ class GameViewModel @Inject constructor() : ViewModel() {
     }
 
     fun placeMarkerChip(boardIndex: Int) {
-        _moves.update { _moves.value + (boardIndex.toString() to userColor) }
-        Database.setMoves(_moves.value)
+        if (_turn.value != Database.userRole) {
+            //return
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val newMove = boardIndex.toString() to Database.userColor
+            Database.addMove(newMove, _moves.value, _hand.value, activeCardIndex)
+            activeCardIndex = -1
+        }
     }
 }

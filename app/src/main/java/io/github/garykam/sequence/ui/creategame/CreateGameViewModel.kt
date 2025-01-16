@@ -25,34 +25,37 @@ class CreateGameViewModel @Inject constructor() : ViewModel() {
         markerChipIndex = index
     }
 
+    private lateinit var _gameListener: ValueEventListener
+
     fun createLobby() {
         val charPool = ('A'..'Z') + ('0'..'9')
         val lobbyCode = List(3) { charPool.random() }.joinToString("")
         Database.createLobby(lobbyCode, MarkerChip.entries[markerChipIndex].shortName)
         step = Step.WAIT_IN_LOBBY
 
-        Database.gameRef.addValueEventListener(
-            object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    step = if (snapshot.hasChild("guest")) {
-                        Step.READY_IN_LOBBY
-                    } else {
-                        Step.WAIT_IN_LOBBY
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
+        _gameListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                step = if (snapshot.hasChild("guest")) {
+                    Step.READY_IN_LOBBY
+                } else {
+                    Step.WAIT_IN_LOBBY
                 }
             }
-        )
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        }
+        Database.gameRef.addValueEventListener(_gameListener)
     }
 
     fun startGame() {
+        Database.gameRef.removeEventListener(_gameListener)
         Database.startGame()
     }
 
     fun closeLobby() {
+        Database.gameRef.removeEventListener(_gameListener)
         Database.closeLobby()
     }
 }
