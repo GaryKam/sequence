@@ -34,7 +34,7 @@ fun CreateGameScreen(
     modifier: Modifier = Modifier,
     viewModel: CreateGameViewModel = viewModel(),
     onBack: () -> Unit,
-    onGameStart: (String) -> Unit
+    onGameStart: () -> Unit
 ) {
     Scaffold(
         modifier = modifier,
@@ -109,8 +109,8 @@ fun CreateGameScreen(
                     if (viewModel.step == Step.SELECT_CHIP) {
                         viewModel.createLobby()
                     } else {
-                        val lobbyCode = viewModel.startGame()
-                        onGameStart(lobbyCode)
+                        viewModel.startGame()
+                        onGameStart()
                     }
                 },
                 modifier = Modifier.padding(horizontal = 40.dp),

@@ -25,7 +25,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import io.github.garykam.sequence.R
-import io.github.garykam.sequence.database.Database
+import io.github.garykam.sequence.util.MarkerChip
 import io.github.garykam.sequence.util.Zoomable
 
 @Composable
@@ -35,8 +35,7 @@ fun GameBoard(
 ) {
     val board by viewModel.board.collectAsState()
     val hand by viewModel.hand.collectAsState()
-    val activeCardIndex by viewModel.activeCardIndex.collectAsState()
-    val moves by Database.moves.collectAsState()
+    val moves by viewModel.moves.collectAsState()
 
     val infiniteTransition = rememberInfiniteTransition(label = "infinite")
     val cardTint by infiniteTransition.animateColor(
@@ -66,7 +65,11 @@ fun GameBoard(
             itemsIndexed(board) { index, card ->
                 Box(contentAlignment = Alignment.Center) {
                     val cardHasChip = moves.containsKey(index.toString())
-                    val activeCard = activeCardIndex?.let { hand[it] }
+                    val activeCard = if (viewModel.activeCardIndex != -1) {
+                        hand[viewModel.activeCardIndex]
+                    } else {
+                        null
+                    }
 
                     if (card.name == activeCard?.name && !cardHasChip) {
                         Image(
@@ -86,15 +89,9 @@ fun GameBoard(
                     }
 
                     if (cardHasChip) {
-                        val markerChipColor = when (moves.getValue(index.toString())) {
-                            "R" -> Color.Red
-                            "G" -> Color.Green
-                            "B" -> Color.Blue
-                            "P" -> Color(-8388480)
-                            else -> {
-                                Color.Black
-                            }
-                        }
+                        val markerChipColor = MarkerChip.entries
+                            .firstOrNull { it.shortName == moves.getValue(index.toString()) }
+                            ?.color
 
                         Image(
                             painter = painterResource(R.drawable.chip),
@@ -102,7 +99,7 @@ fun GameBoard(
                             modifier = Modifier.scale(0.9f),
                             colorFilter = ColorFilter.lighting(
                                 multiply = Color.White,
-                                add = markerChipColor
+                                add = markerChipColor ?: Color.Black
                             )
                         )
                     }

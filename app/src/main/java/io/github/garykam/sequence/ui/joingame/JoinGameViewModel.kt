@@ -5,12 +5,15 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.garykam.sequence.database.Database
 import io.github.garykam.sequence.util.MarkerChip
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,36 +35,39 @@ class JoinGameViewModel @Inject constructor() : ViewModel() {
     }
 
     fun findLobby() {
-        if (lobbyCode.isEmpty()) {
-            return
-        }
-
-        Database.gamesRef
-            .child(lobbyCode)
-            .get()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful && task.result.exists()) {
-                    val hostColor = task.result.child("host").getValue(String::class.java)
-                    val markerChips = MarkerChip.entries.filter { it.name != hostColor }.toList()
-                    this.markerChips = markerChips
-                    step = Step.SELECT_CHIP
-                }
+        viewModelScope.launch(Dispatchers.IO) {
+            if (!Database.findLobby(lobbyCode)) {
+                return@launch
             }
+
+            Database.gameRef
+                .get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful && task.result.exists()) {
+                        val hostColor = task.result.child("host/color").getValue(String::class.java)
+                        val markerChips = MarkerChip.entries
+                            .filter { it.shortName != hostColor }
+                            .toList()
+                        this@JoinGameViewModel.markerChips = markerChips
+                        step = Step.SELECT_CHIP
+                    }
+                }
+        }
     }
 
     fun selectMarkerChip(index: Int) {
         markerChipIndex = index
     }
 
-    fun joinLobby(onGameStart: (String) -> Unit) {
-        Database.joinLobby(lobbyCode, markerChips[markerChipIndex].name)
+    fun joinLobby(onGameStart: () -> Unit) {
+        Database.joinLobby(markerChips[markerChipIndex].shortName)
         step = Step.WAIT_IN_LOBBY
 
-        Database.gamesRef.child(lobbyCode).addValueEventListener(
+        Database.gameRef.addValueEventListener(
             object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.hasChild("moves")) {
-                        onGameStart(lobbyCode)
+                    if (snapshot.hasChild("turn")) {
+                        onGameStart()
                     }
                 }
 
@@ -78,5 +84,5 @@ class JoinGameViewModel @Inject constructor() : ViewModel() {
 }
 
 enum class Step {
-     FIND_LOBBY, SELECT_CHIP, WAIT_IN_LOBBY
+    FIND_LOBBY, SELECT_CHIP, WAIT_IN_LOBBY
 }

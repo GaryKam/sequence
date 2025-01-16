@@ -1,65 +1,92 @@
 package io.github.garykam.sequence.database
 
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import io.github.garykam.sequence.util.Game
-import kotlinx.coroutines.flow.MutableStateFlow
+import io.github.garykam.sequence.util.Host
+import kotlinx.coroutines.tasks.await
 
 object Database {
-    private val firebase = Firebase.database
-    val gamesRef = firebase.getReference("games")
+    val gameRef: DatabaseReference
+        get() = firebase.getReference("games").child(_lobbyCode)
 
-    private var _moves = MutableStateFlow(emptyMap<String, String>())
-    val moves = _moves
+    var userRole = ""
+        private set
+
+    var userColor = ""
+        private set
+
+    private val firebase = Firebase.database
 
     private var _lobbyCode = ""
-
-    init {
-        /*movesRef.setValue(null)
-        movesRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                _moves.update { snapshot.getValue<Map<String, String>>().orEmpty() }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-
-            }
-        })*/
-    }
 
     fun createLobby(
         lobbyCode: String,
         hostColor: String
     ) {
         _lobbyCode = lobbyCode
-        gamesRef.child(lobbyCode).setValue(Game(hostColor))
+        userRole = "host"
+        userColor = hostColor
+        gameRef.setValue(Game(Host(hostColor)))
     }
 
     fun closeLobby() {
-        gamesRef.child(_lobbyCode).removeValue()
+        gameRef.removeValue()
+    }
+
+    suspend fun findLobby(lobbyCode: String): Boolean {
+        val lobbyExists = firebase.getReference("games").child(lobbyCode)
+            .get()
+            .await()
+            .exists()
+        if (lobbyExists) {
+            _lobbyCode = lobbyCode
+            userRole = "guest"
+        }
+        return lobbyExists
     }
 
     fun joinLobby(
-        lobbyCode: String,
         guestColor: String
     ) {
-        _lobbyCode = lobbyCode
-        gamesRef.child(lobbyCode).child("guest").setValue(guestColor)
+        userColor = guestColor
+        gameRef.child("guest/color").setValue(guestColor)
     }
 
     fun leaveLobby() {
-        gamesRef.child(_lobbyCode).child("guest").removeValue()
+        gameRef.child("guest").removeValue()
     }
 
-    fun startGame(): String {
-        gamesRef.child(_lobbyCode).child("moves").setValue("")
-        return _lobbyCode
+    fun startGame() {
+        gameRef.child("turn").setValue(if ((0..1).random() == 0) "host" else "guest")
     }
 
-    fun addMove(
-        boardIndex: Int,
-        markerChipColor: String
-    ) {
-        //movesRef.setValue(_moves.value + mapOf(boardIndex.toString() to markerChipColor))
+    fun setupDeckAndHands(cards: List<String>) {
+        if (userRole != "host") {
+            return
+        }
+
+        val deck = cards.toMutableList()
+        val hostHand = mutableListOf<String>()
+        val guestHand = mutableListOf<String>()
+
+        repeat(7) {
+            var card = deck.random()
+            hostHand.add(card)
+            deck.remove(card)
+
+            card = deck.random()
+            guestHand.add(card)
+            deck.remove(card)
+        }
+
+        gameRef.child("deck").setValue(deck)
+        gameRef.child("host/hand").setValue(hostHand)
+        gameRef.child("guest/hand").setValue(guestHand)
+    }
+
+    fun setMoves(moves: Map<String, String>) {
+        gameRef.child("moves").setValue(moves)
     }
 }

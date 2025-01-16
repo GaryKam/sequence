@@ -2,9 +2,17 @@ package io.github.garykam.sequence.ui.game
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.getValue
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.garykam.sequence.database.Database
+import io.github.garykam.sequence.database.Database.userColor
 import io.github.garykam.sequence.util.Card
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,6 +21,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GameViewModel @Inject constructor() : ViewModel() {
+    var activeCardIndex by mutableIntStateOf(-1)
+        private set
+
     private val _boardSetup = listOf(
         "b", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "b",
         "c6", "c5", "c4", "c3", "c2", "h1", "hk", "hq", "h10", "s10",
@@ -29,50 +40,89 @@ class GameViewModel @Inject constructor() : ViewModel() {
     private var _board = MutableStateFlow(listOf<Card>())
     val board = _board.asStateFlow()
 
+    private var _moves = MutableStateFlow(emptyMap<String, String>())
+    val moves = _moves
+
     private var _hand = MutableStateFlow(listOf<Card>())
     val hand = _hand.asStateFlow()
-
-    private var _activeCardIndex: MutableStateFlow<Int?> = MutableStateFlow(null)
-    val activeCardIndex = _activeCardIndex.asStateFlow()
 
     private var _jackCards = mutableSetOf<Card>()
 
     @SuppressLint("DiscouragedApi")
     fun init(context: Context) {
+        // Client: grid of cards.
         _board.value = buildList {
             for (cardName in _boardSetup) {
-                val drawableId = context.resources.getIdentifier(cardName, "drawable", context.packageName)
+                val drawableId = context.resources.getIdentifier(
+                    cardName,
+                    "drawable",
+                    context.packageName
+                )
                 add(Card(cardName, drawableId))
             }
         }
 
+        // Client: jack wild cards.
         val jackNames = listOf("cj", "dj", "hj", "sj")
         for (cardName in jackNames) {
-            val drawableId = context.resources.getIdentifier(cardName, "drawable", context.packageName)
+            val drawableId = context.resources.getIdentifier(
+                cardName,
+                "drawable",
+                context.packageName
+            )
             _jackCards.add(Card(cardName, drawableId))
         }
-    }
 
-    fun dealCards() {
-        val availableCards = (_board.value + _jackCards).filter { it.name != "b" }
-        _hand.update {
-            buildList {
-                repeat(7) {
-                    add(availableCards.random())
+        // Server: cards in deck.
+        val cards = (_boardSetup + jackNames - setOf("b"))
+        Database.setupDeckAndHands(cards)
+
+        // Server: deal player hand.
+        Database.gameRef.child("${Database.userRole}/hand").addValueEventListener(
+            object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val hand = snapshot.getValue<List<String>>().orEmpty()
+
+                    _hand.update {
+                        buildList {
+                            for (cardName in hand) {
+                                val card = _board.value.first { it.name == cardName }
+                                add(card)
+                            }
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
                 }
             }
-        }
+        )
+
+        // Server: listen for moves.
+        Database.gameRef.child("moves").addValueEventListener(
+            object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    _moves.update { snapshot.getValue<Map<String, String>>().orEmpty() }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+            }
+        )
     }
 
     fun selectCardFromHand(cardIndex: Int) {
-        if (_activeCardIndex.value == cardIndex) {
-            _activeCardIndex.update { null }
+        activeCardIndex = if (activeCardIndex == cardIndex) {
+            -1
         } else {
-            _activeCardIndex.update { cardIndex }
+            cardIndex
         }
     }
 
     fun placeMarkerChip(boardIndex: Int) {
-        Database.addMove(boardIndex, "P")
+        _moves.update { _moves.value + (boardIndex.toString() to userColor) }
+        Database.setMoves(_moves.value)
     }
 }

@@ -28,10 +28,10 @@ class CreateGameViewModel @Inject constructor() : ViewModel() {
     fun createLobby() {
         val charPool = ('A'..'Z') + ('0'..'9')
         val lobbyCode = List(3) { charPool.random() }.joinToString("")
-        Database.createLobby(lobbyCode, MarkerChip.entries[markerChipIndex].name)
+        Database.createLobby(lobbyCode, MarkerChip.entries[markerChipIndex].shortName)
         step = Step.WAIT_IN_LOBBY
 
-        Database.gamesRef.child(lobbyCode).addValueEventListener(
+        Database.gameRef.addValueEventListener(
             object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     step = if (snapshot.hasChild("guest")) {
@@ -48,8 +48,8 @@ class CreateGameViewModel @Inject constructor() : ViewModel() {
         )
     }
 
-    fun startGame(): String {
-        return Database.startGame()
+    fun startGame() {
+        Database.startGame()
     }
 
     fun closeLobby() {

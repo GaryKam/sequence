@@ -34,7 +34,7 @@ fun AppNavigation(
             JoinGameScreen(
                 modifier = Modifier.fillMaxSize(),
                 onBack = { navController.navigate(Landing) },
-                onGameStart = { navController.navigate(Game(it)) }
+                onGameStart = { navController.navigate(Game) }
             )
         }
 
@@ -42,15 +42,12 @@ fun AppNavigation(
             CreateGameScreen(
                 modifier = Modifier.fillMaxSize(),
                 onBack = { navController.navigate(Landing) },
-                onGameStart = { navController.navigate(Game(it)) }
+                onGameStart = { navController.navigate(Game) }
             )
         }
 
-        composable<Game> { backStackEntry ->
-            GameScreen(
-                modifier = Modifier.fillMaxSize(),
-                lobbyCode = (backStackEntry.toRoute() as Game).lobbyCode
-            )
+        composable<Game> {
+            GameScreen(modifier = Modifier.fillMaxSize())
         }
     }
 }

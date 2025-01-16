@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,22 +22,15 @@ fun PlayerHand(
     viewModel: GameViewModel
 ) {
     val hand by viewModel.hand.collectAsState()
-    val activeCardIndex by viewModel.activeCardIndex.collectAsState()
 
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (hand.isEmpty()) {
-            Button(onClick = { viewModel.dealCards() }) {
-                Text(text = "Random hand")
-            }
-        }
-
         for ((index, card) in hand.withIndex()) {
             val cardOffset by animateIntAsState(
-                targetValue = if (index == activeCardIndex) -30 else 0,
+                targetValue = if (index == viewModel.activeCardIndex) -30 else 0,
                 label = "cardHeight"
             )
 

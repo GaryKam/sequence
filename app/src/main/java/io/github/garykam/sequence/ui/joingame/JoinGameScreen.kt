@@ -39,7 +39,7 @@ fun JoinGameScreen(
     modifier: Modifier = Modifier,
     viewModel: JoinGameViewModel = viewModel(),
     onBack: () -> Unit,
-    onGameStart: (String) -> Unit
+    onGameStart: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
 

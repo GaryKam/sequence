@@ -2,9 +2,12 @@ package io.github.garykam.sequence.util
 
 import androidx.compose.ui.graphics.Color
 
-enum class MarkerChip(val color: Color) {
-    RED(Color(255, 71, 91)),
-    GREEN(Color(32, 167, 106)),
-    BLUE(Color(0, 68, 150)),
-    PURPLE(Color(99, 76, 128))
+enum class MarkerChip(
+    val shortName: String,
+    val color: Color
+) {
+    RED("R", Color(255, 71, 91)),
+    GREEN("G", Color(34, 139, 34)),
+    BLUE("B", Color(25, 116, 210)),
+    PURPLE("P", Color(128, 0, 128))
 }
