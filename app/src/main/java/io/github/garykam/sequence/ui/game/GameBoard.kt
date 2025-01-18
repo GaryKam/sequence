@@ -26,7 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import io.github.garykam.sequence.R
 import io.github.garykam.sequence.util.MarkerChip
-import io.github.garykam.sequence.util.Zoomable
+import io.github.garykam.sequence.ui.components.Zoomable
 
 @Composable
 fun GameBoard(

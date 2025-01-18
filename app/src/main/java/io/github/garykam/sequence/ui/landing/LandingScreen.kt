@@ -12,9 +12,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import io.github.garykam.sequence.util.ScreenUtil
 
 @Composable
 fun LandingScreen(
@@ -22,6 +25,12 @@ fun LandingScreen(
     onJoinGameClick: () -> Unit,
     onCreateGameClick: () -> Unit
 ) {
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = Unit) {
+        ScreenUtil.hideSystemBars(context)
+    }
+
     Box(modifier = modifier) {
         Text(
             text = "Sequence",

@@ -1,12 +1,12 @@
-package io.github.garykam.sequence.database
+package io.github.garykam.sequence.data
 
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.GenericTypeIndicator
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import io.github.garykam.sequence.util.Card
-import io.github.garykam.sequence.util.Game
-import io.github.garykam.sequence.util.Host
+import io.github.garykam.sequence.model.Card
+import io.github.garykam.sequence.model.Game
+import io.github.garykam.sequence.model.Host
 import kotlinx.coroutines.tasks.await
 
 object Database {
@@ -111,5 +111,9 @@ object Database {
             "$userRole/hand" to newHand
         )
         gameRef.updateChildren(update)
+    }
+
+    fun stopGame() {
+        gameRef.child("turn").removeValue()
     }
 }

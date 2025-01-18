@@ -66,7 +66,8 @@ fun AppNavigation(
             GameScreen(
                 modifier = Modifier
                     .fillMaxSize()
-                    .systemBarsPadding()
+                    .systemBarsPadding(),
+                onGameLeave = { navController.popBackStack() }
             )
         }
     }

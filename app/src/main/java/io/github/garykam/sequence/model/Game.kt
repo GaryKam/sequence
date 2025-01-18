@@ -1,4 +1,4 @@
-package io.github.garykam.sequence.util
+package io.github.garykam.sequence.model
 
 data class Game(
     val host: Host

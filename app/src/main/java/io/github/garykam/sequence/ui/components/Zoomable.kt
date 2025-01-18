@@ -1,4 +1,4 @@
-package io.github.garykam.sequence.util
+package io.github.garykam.sequence.ui.components
 
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box

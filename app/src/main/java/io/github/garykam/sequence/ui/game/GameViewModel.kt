@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,8 +13,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.getValue
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.garykam.sequence.database.Database
-import io.github.garykam.sequence.util.Card
+import io.github.garykam.sequence.data.Database
+import io.github.garykam.sequence.model.Card
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,6 +25,9 @@ import javax.inject.Inject
 @HiltViewModel
 class GameViewModel @Inject constructor() : ViewModel() {
     var activeCardIndex by mutableIntStateOf(-1)
+        private set
+
+    var isGameClosed by mutableStateOf(false)
         private set
 
     private val _boardSetup = listOf(
@@ -52,6 +56,8 @@ class GameViewModel @Inject constructor() : ViewModel() {
     val turn = _turn.asStateFlow()
 
     private var _jackCards = mutableSetOf<Card>()
+
+    private var _gameListeners = mutableSetOf<ValueEventListener>()
 
     @SuppressLint("DiscouragedApi")
     fun init(context: Context) {
@@ -101,6 +107,8 @@ class GameViewModel @Inject constructor() : ViewModel() {
                 override fun onCancelled(error: DatabaseError) {
                     TODO("Not yet implemented")
                 }
+            }.also {
+                _gameListeners.add(it)
             }
         )
 
@@ -114,6 +122,8 @@ class GameViewModel @Inject constructor() : ViewModel() {
                 override fun onCancelled(error: DatabaseError) {
                     TODO("Not yet implemented")
                 }
+            }.also {
+                _gameListeners.add(it)
             }
         )
 
@@ -121,22 +131,25 @@ class GameViewModel @Inject constructor() : ViewModel() {
         Database.gameRef.child("turn").addValueEventListener(
             object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    _turn.update { snapshot.getValue<String>().orEmpty() }
+                    val turn = snapshot.getValue<String>().orEmpty()
+                    if (turn.isEmpty()) {
+                        isGameClosed = true
+                    } else {
+                        _turn.update { turn }
+                    }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
                     TODO("Not yet implemented")
                 }
+            }.also {
+                _gameListeners.add(it)
             }
         )
     }
 
     fun selectCardFromHand(cardIndex: Int) {
-        activeCardIndex = if (activeCardIndex == cardIndex) {
-            -1
-        } else {
-            cardIndex
-        }
+        activeCardIndex = if (activeCardIndex == cardIndex) -1 else cardIndex
     }
 
     fun placeMarkerChip(boardIndex: Int) {
@@ -149,5 +162,17 @@ class GameViewModel @Inject constructor() : ViewModel() {
             Database.addMove(newMove, _moves.value, _hand.value, activeCardIndex)
             activeCardIndex = -1
         }
+    }
+
+    fun leaveGame() {
+        for (listener in _gameListeners) {
+            Database.gameRef.removeEventListener(listener)
+        }
+
+        Database.stopGame()
+    }
+
+    fun endGame() {
+        Database.closeLobby()
     }
 }

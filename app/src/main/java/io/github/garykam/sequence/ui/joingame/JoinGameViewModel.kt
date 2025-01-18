@@ -10,7 +10,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.garykam.sequence.database.Database
+import io.github.garykam.sequence.data.Database
 import io.github.garykam.sequence.util.MarkerChip
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
