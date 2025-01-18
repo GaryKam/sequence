@@ -26,7 +26,7 @@ fun Zoomable(
         .pointerInput(Unit) {
             detectTransformGestures { centroid, pan, gestureZoom, _ ->
                 val oldScale = zoom
-                val newScale = zoom * gestureZoom
+                val newScale = (zoom * gestureZoom).coerceIn(0.8f, 2f)
                 offset = (offset + centroid / oldScale) - (centroid / newScale + pan / oldScale)
                 zoom = newScale
             }

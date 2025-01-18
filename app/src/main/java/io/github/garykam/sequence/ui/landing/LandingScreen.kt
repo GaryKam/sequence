@@ -28,6 +28,7 @@ fun LandingScreen(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = 100.dp),
+            color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.headlineLarge
         )
 

@@ -1,14 +1,16 @@
 package io.github.garykam.sequence.ui.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import io.github.garykam.sequence.ui.creategame.CreateGameScreen
 import io.github.garykam.sequence.ui.game.GameScreen
 import io.github.garykam.sequence.ui.joingame.JoinGameScreen
@@ -25,7 +27,10 @@ fun AppNavigation(
     ) {
         composable<Landing> {
             LandingScreen(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .fillMaxSize()
+                    .systemBarsPadding(),
                 onJoinGameClick = { navController.navigate(JoinGame) },
                 onCreateGameClick = { navController.navigate(CreateGame) }
             )
@@ -33,7 +38,9 @@ fun AppNavigation(
 
         composable<JoinGame> {
             JoinGameScreen(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .imePadding(),
                 onBack = { navController.navigate(Landing) },
                 onGameStart = { navController.navigate(Game) }
             )
