@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.garykam.sequence.R
 import io.github.garykam.sequence.util.ScreenUtil
@@ -24,7 +25,7 @@ import io.github.garykam.sequence.util.ScreenUtil
 @Composable
 fun GameScreen(
     modifier: Modifier = Modifier,
-    viewModel: GameViewModel = viewModel(),
+    viewModel: GameViewModel = hiltViewModel(),
     onGameLeave: () -> Unit
 ) {
     val context = LocalContext.current
@@ -100,7 +101,7 @@ fun GameScreen(
                         onGameLeave()
                     }
                 ) {
-                    Text(text = "Okay")
+                    Text(text = "Leave")
                 }
             },
             title = { Text(text = "Game Over") },

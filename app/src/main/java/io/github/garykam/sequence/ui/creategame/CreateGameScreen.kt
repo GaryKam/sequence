@@ -24,7 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import io.github.garykam.sequence.ui.components.MarkerChipSelection
 import io.github.garykam.sequence.util.MarkerChip
 
@@ -32,7 +32,7 @@ import io.github.garykam.sequence.util.MarkerChip
 @Composable
 fun CreateGameScreen(
     modifier: Modifier = Modifier,
-    viewModel: CreateGameViewModel = viewModel(),
+    viewModel: CreateGameViewModel = hiltViewModel(),
     onBack: () -> Unit,
     onGameStart: () -> Unit
 ) {

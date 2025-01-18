@@ -20,7 +20,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import io.github.garykam.sequence.R
-import io.github.garykam.sequence.data.Database
 
 @Composable
 fun PlayerHand(
@@ -36,7 +35,7 @@ fun PlayerHand(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = if (turn == Database.userRole) {
+            text = if (turn == viewModel.database.userRole) {
                 "Your Turn"
             } else {
                 "Opponent's Turn"

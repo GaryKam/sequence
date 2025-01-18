@@ -23,7 +23,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class GameViewModel @Inject constructor() : ViewModel() {
+class GameViewModel @Inject constructor(
+    val database: Database
+) : ViewModel() {
     var activeCardIndex by mutableIntStateOf(-1)
         private set
 
@@ -86,10 +88,10 @@ class GameViewModel @Inject constructor() : ViewModel() {
 
         // Server: cards in deck.
         val cards = (_boardSetup + jackNames - setOf("b"))
-        Database.setupDeckAndHands(cards)
+        database.setupDeckAndHands(cards)
 
         // Server: listen for hand.
-        Database.gameRef.child("${Database.userRole}/hand").addValueEventListener(
+        database.gameRef.child("${database.userRole}/hand").addValueEventListener(
             object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val hand = snapshot.getValue<List<String>>().orEmpty()
@@ -113,7 +115,7 @@ class GameViewModel @Inject constructor() : ViewModel() {
         )
 
         // Server: listen for moves.
-        Database.gameRef.child("moves").addValueEventListener(
+        database.gameRef.child("moves").addValueEventListener(
             object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     _moves.update { snapshot.getValue<Map<String, String>>().orEmpty() }
@@ -128,7 +130,7 @@ class GameViewModel @Inject constructor() : ViewModel() {
         )
 
         // Server: listen for turn.
-        Database.gameRef.child("turn").addValueEventListener(
+        database.gameRef.child("turn").addValueEventListener(
             object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val turn = snapshot.getValue<String>().orEmpty()
@@ -153,26 +155,26 @@ class GameViewModel @Inject constructor() : ViewModel() {
     }
 
     fun placeMarkerChip(boardIndex: Int) {
-        if (_turn.value != Database.userRole) {
+        if (_turn.value != database.userRole) {
             return
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            val newMove = boardIndex.toString() to Database.userColor
-            Database.addMove(newMove, _moves.value, _hand.value, activeCardIndex)
+            val newMove = boardIndex.toString() to database.userColor
+            database.addMove(newMove, _moves.value, _hand.value, activeCardIndex)
             activeCardIndex = -1
         }
     }
 
     fun leaveGame() {
         for (listener in _gameListeners) {
-            Database.gameRef.removeEventListener(listener)
+            database.gameRef.removeEventListener(listener)
         }
 
-        Database.stopGame()
+        database.stopGame()
     }
 
     fun endGame() {
-        Database.closeLobby()
+        database.closeLobby()
     }
 }

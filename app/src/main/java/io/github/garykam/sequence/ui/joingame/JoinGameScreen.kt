@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.garykam.sequence.ui.components.MarkerChipSelection
 
@@ -37,7 +38,7 @@ import io.github.garykam.sequence.ui.components.MarkerChipSelection
 @Composable
 fun JoinGameScreen(
     modifier: Modifier = Modifier,
-    viewModel: JoinGameViewModel = viewModel(),
+    viewModel: JoinGameViewModel = hiltViewModel(),
     onBack: () -> Unit,
     onGameStart: () -> Unit
 ) {

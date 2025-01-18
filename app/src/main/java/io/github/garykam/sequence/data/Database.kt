@@ -9,7 +9,7 @@ import io.github.garykam.sequence.model.Game
 import io.github.garykam.sequence.model.Host
 import kotlinx.coroutines.tasks.await
 
-object Database {
+class Database {
     val gameRef: DatabaseReference
         get() = firebase.getReference("games").child(_lobbyCode)
 

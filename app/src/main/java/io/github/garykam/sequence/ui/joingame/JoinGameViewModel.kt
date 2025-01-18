@@ -17,7 +17,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class JoinGameViewModel @Inject constructor() : ViewModel() {
+class JoinGameViewModel @Inject constructor(
+    private val database: Database
+) : ViewModel() {
     var step by mutableStateOf(Step.FIND_LOBBY)
         private set
 
@@ -38,11 +40,11 @@ class JoinGameViewModel @Inject constructor() : ViewModel() {
 
     fun findLobby() {
         viewModelScope.launch(Dispatchers.IO) {
-            if (!Database.findLobby(lobbyCode)) {
+            if (!database.findLobby(lobbyCode)) {
                 return@launch
             }
 
-            Database.gameRef
+            database.gameRef
                 .get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful && task.result.exists()) {
@@ -62,13 +64,13 @@ class JoinGameViewModel @Inject constructor() : ViewModel() {
     }
 
     fun joinLobby(onGameStart: () -> Unit) {
-        Database.joinLobby(markerChips[markerChipIndex].shortName)
+        database.joinLobby(markerChips[markerChipIndex].shortName)
         step = Step.WAIT_IN_LOBBY
 
         _gameListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.hasChild("turn")) {
-                    Database.gameRef.removeEventListener(_gameListener)
+                    database.gameRef.removeEventListener(_gameListener)
                     onGameStart()
                 }
             }
@@ -77,14 +79,14 @@ class JoinGameViewModel @Inject constructor() : ViewModel() {
                 TODO("Not yet implemented")
             }
         }
-        Database.gameRef.addValueEventListener(_gameListener)
+        database.gameRef.addValueEventListener(_gameListener)
     }
 
     fun leaveLobby() {
         if (this::_gameListener.isInitialized) {
-            Database.gameRef.removeEventListener(_gameListener)
+            database.gameRef.removeEventListener(_gameListener)
         }
-        Database.leaveLobby()
+        database.leaveLobby()
     }
 }
 
