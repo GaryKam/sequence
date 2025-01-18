@@ -1,6 +1,7 @@
 package io.github.garykam.sequence.ui.navigation
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -47,7 +48,11 @@ fun AppNavigation(
         }
 
         composable<Game> {
-            GameScreen(modifier = Modifier.fillMaxSize())
+            GameScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .systemBarsPadding()
+            )
         }
     }
 }

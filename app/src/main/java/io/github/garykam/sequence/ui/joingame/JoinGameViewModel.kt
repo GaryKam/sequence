@@ -81,7 +81,9 @@ class JoinGameViewModel @Inject constructor() : ViewModel() {
     }
 
     fun leaveLobby() {
-        Database.gameRef.removeEventListener(_gameListener)
+        if (this::_gameListener.isInitialized) {
+            Database.gameRef.removeEventListener(_gameListener)
+        }
         Database.leaveLobby()
     }
 }
