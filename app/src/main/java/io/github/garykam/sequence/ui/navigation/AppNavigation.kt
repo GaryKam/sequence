@@ -41,16 +41,24 @@ fun AppNavigation(
                 modifier = Modifier
                     .fillMaxSize()
                     .imePadding(),
-                onBack = { navController.navigate(Landing) },
-                onGameStart = { navController.navigate(Game) }
+                onBack = { navController.popBackStack() },
+                onGameStart = {
+                    navController.navigate(Game) {
+                        popUpTo<Landing>()
+                    }
+                }
             )
         }
 
         composable<CreateGame> {
             CreateGameScreen(
                 modifier = Modifier.fillMaxSize(),
-                onBack = { navController.navigate(Landing) },
-                onGameStart = { navController.navigate(Game) }
+                onBack = { navController.popBackStack() },
+                onGameStart = {
+                    navController.navigate(Game) {
+                        popUpTo<Landing>()
+                    }
+                }
             )
         }
 
