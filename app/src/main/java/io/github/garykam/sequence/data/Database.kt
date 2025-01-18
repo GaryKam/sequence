@@ -32,7 +32,7 @@ class Database {
         gameRef.setValue(Game(Host(hostColor)))
     }
 
-    fun closeLobby() {
+    fun removeGame() {
         gameRef.removeValue()
     }
 

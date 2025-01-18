@@ -64,7 +64,8 @@ class CreateGameViewModel @Inject constructor(
         if (this::_gameListener.isInitialized) {
             database.gameRef.removeEventListener(_gameListener)
         }
-        database.closeLobby()
+
+        database.removeGame()
     }
 }
 

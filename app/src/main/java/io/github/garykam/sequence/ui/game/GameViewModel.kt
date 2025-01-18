@@ -29,7 +29,7 @@ class GameViewModel @Inject constructor(
     var activeCardIndex by mutableIntStateOf(-1)
         private set
 
-    var isGameClosed by mutableStateOf(false)
+    var isGameEnded by mutableStateOf(false)
         private set
 
     val userRole: String
@@ -137,8 +137,9 @@ class GameViewModel @Inject constructor(
             object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val turn = snapshot.getValue<String>().orEmpty()
+
                     if (turn.isEmpty()) {
-                        isGameClosed = true
+                        leaveGame()
                     } else {
                         _turn.update { turn }
                     }
@@ -174,9 +175,10 @@ class GameViewModel @Inject constructor(
         }
 
         database.stopGame()
+        isGameEnded = true
     }
 
     fun endGame() {
-        database.closeLobby()
+        database.removeGame()
     }
 }
