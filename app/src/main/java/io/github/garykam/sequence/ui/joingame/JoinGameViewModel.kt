@@ -32,6 +32,9 @@ class JoinGameViewModel @Inject constructor(
     var markerChipIndex by mutableIntStateOf(0)
         private set
 
+    var isLobbyClosed by mutableStateOf(false)
+        private set
+
     private lateinit var _gameListener: ValueEventListener
 
     fun updateLobbyCode(code: String) {
@@ -72,6 +75,23 @@ class JoinGameViewModel @Inject constructor(
                 if (snapshot.hasChild("turn")) {
                     database.gameRef.removeEventListener(_gameListener)
                     onGameStart()
+                } else if (!snapshot.hasChild("host")) {
+                    isLobbyClosed = true
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        }
+
+        _gameListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.hasChild("turn")) {
+                    database.gameRef.removeEventListener(_gameListener)
+                    onGameStart()
+                } else if (!snapshot.hasChild("host")) {
+                    isLobbyClosed = true
                 }
             }
 

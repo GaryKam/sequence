@@ -35,7 +35,7 @@ fun PlayerHand(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = if (turn == viewModel.database.userRole) {
+            text = if (turn == viewModel.userRole) {
                 "Your Turn"
             } else {
                 "Opponent's Turn"

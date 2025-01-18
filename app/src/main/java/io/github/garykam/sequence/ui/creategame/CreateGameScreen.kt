@@ -1,5 +1,6 @@
 package io.github.garykam.sequence.ui.creategame
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,11 @@ fun CreateGameScreen(
     onBack: () -> Unit,
     onGameStart: () -> Unit
 ) {
+    BackHandler {
+        onBack()
+        viewModel.closeLobby()
+    }
+
     Scaffold(
         modifier = modifier,
         topBar = {

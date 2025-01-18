@@ -16,8 +16,7 @@ class Database {
     var userRole = ""
         private set
 
-    var userColor = ""
-        private set
+    private var userColor = ""
 
     private val firebase = Firebase.database
 
@@ -84,7 +83,7 @@ class Database {
     }
 
     suspend fun addMove(
-        newMove: Pair<String, String>,
+        boardIndex: Int,
         currentMoves: Map<String, String>,
         hand: List<Card>,
         cardIndex: Int
@@ -104,12 +103,14 @@ class Database {
                     this[cardIndex] = nextCard
                 }
             }
+        val newMove = boardIndex.toString() to userColor
         val update = hashMapOf(
             "moves" to currentMoves + newMove,
             "turn" to if (userRole == "host") "guest" else "host",
             "deck" to newDeck,
             "$userRole/hand" to newHand
         )
+
         gameRef.updateChildren(update)
     }
 

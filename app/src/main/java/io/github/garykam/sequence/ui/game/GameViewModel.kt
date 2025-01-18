@@ -24,13 +24,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GameViewModel @Inject constructor(
-    val database: Database
+    private val database: Database
 ) : ViewModel() {
     var activeCardIndex by mutableIntStateOf(-1)
         private set
 
     var isGameClosed by mutableStateOf(false)
         private set
+
+    val userRole: String
+        get() = database.userRole
 
     private val _boardSetup = listOf(
         "b", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "b",
@@ -91,7 +94,7 @@ class GameViewModel @Inject constructor(
         database.setupDeckAndHands(cards)
 
         // Server: listen for hand.
-        database.gameRef.child("${database.userRole}/hand").addValueEventListener(
+        database.gameRef.child("$userRole/hand").addValueEventListener(
             object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val hand = snapshot.getValue<List<String>>().orEmpty()
@@ -155,13 +158,12 @@ class GameViewModel @Inject constructor(
     }
 
     fun placeMarkerChip(boardIndex: Int) {
-        if (_turn.value != database.userRole) {
+        if (_turn.value != userRole) {
             return
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            val newMove = boardIndex.toString() to database.userColor
-            database.addMove(newMove, _moves.value, _hand.value, activeCardIndex)
+            database.addMove(boardIndex, _moves.value, _hand.value, activeCardIndex)
             activeCardIndex = -1
         }
     }
