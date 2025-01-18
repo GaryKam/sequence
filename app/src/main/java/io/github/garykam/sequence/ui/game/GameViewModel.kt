@@ -141,7 +141,7 @@ class GameViewModel @Inject constructor() : ViewModel() {
 
     fun placeMarkerChip(boardIndex: Int) {
         if (_turn.value != Database.userRole) {
-            //return
+            return
         }
 
         viewModelScope.launch(Dispatchers.IO) {

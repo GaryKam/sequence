@@ -21,6 +21,9 @@ class CreateGameViewModel @Inject constructor() : ViewModel() {
     var markerChipIndex by mutableIntStateOf(0)
         private set
 
+    var lobbyCode by mutableStateOf("")
+        private set
+
     fun selectMarkerChip(index: Int) {
         markerChipIndex = index
     }
@@ -31,6 +34,7 @@ class CreateGameViewModel @Inject constructor() : ViewModel() {
         val charPool = ('A'..'Z') + ('0'..'9')
         val lobbyCode = List(3) { charPool.random() }.joinToString("")
         Database.createLobby(lobbyCode, MarkerChip.entries[markerChipIndex].shortName)
+        this.lobbyCode = lobbyCode
         step = Step.WAIT_IN_LOBBY
 
         _gameListener = object : ValueEventListener {

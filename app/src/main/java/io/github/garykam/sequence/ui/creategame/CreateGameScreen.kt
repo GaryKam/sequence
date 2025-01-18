@@ -79,6 +79,11 @@ fun CreateGameScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
+                        text = "Lobby Code: ${viewModel.lobbyCode}",
+                        modifier = Modifier.padding(bottom = 50.dp),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
                         text = "Waiting for guest...",
                         modifier = Modifier.padding(bottom = 5.dp),
                         style = MaterialTheme.typography.bodyMedium
