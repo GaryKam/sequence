@@ -42,10 +42,12 @@ class Database {
             .get()
             .await()
             .exists()
+
         if (lobbyExists) {
             _lobbyCode = lobbyCode
             userRole = "guest"
         }
+
         return lobbyExists
     }
 
@@ -104,9 +106,16 @@ class Database {
                     this[cardIndex] = nextCard
                 }
             }
+        val isChipOnCard = currentMoves.containsKey(boardIndex.toString())
         val newMove = boardIndex.toString() to userColor
+        val newMoves = if (isChipOnCard) {
+            currentMoves - boardIndex.toString()
+        } else {
+            currentMoves + newMove
+        }
+
         val update = hashMapOf(
-            "moves" to currentMoves + newMove,
+            "moves" to newMoves,
             "turn" to if (userRole == "host") "guest" else "host",
             "deck" to newDeck,
             "$userRole/hand" to newHand

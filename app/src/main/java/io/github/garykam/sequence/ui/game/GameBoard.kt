@@ -65,7 +65,7 @@ fun GameBoard(
 
             itemsIndexed(board) { index, card ->
                 Box(contentAlignment = Alignment.Center) {
-                    val cardHasChip = moves.containsKey(index.toString())
+                    val isChipOnCard = moves.containsKey(index.toString())
                     val activeCardName = if (viewModel.activeCardIndex != -1) {
                         hand[viewModel.activeCardIndex].name
                     } else {
@@ -78,7 +78,7 @@ fun GameBoard(
                             contentDescription = card.name
                         )
 
-                        if (cardHasChip) {
+                        if (isChipOnCard) {
                             val markerChip = MarkerChip.getChip(moves.getValue(index.toString()))
 
                             if (viewModel.isUserChip(markerChip)) {
@@ -108,7 +108,13 @@ fun GameBoard(
                                 Image(
                                     painter = painterResource(R.drawable.chip),
                                     contentDescription = "marker chip",
-                                    modifier = Modifier.scale(0.9f),
+                                    modifier = Modifier
+                                        .scale(0.9f)
+                                        .clickable(
+                                            interactionSource = null,
+                                            indication = null,
+                                            onClick = { viewModel.removeMarkerChip(index) }
+                                        ),
                                     colorFilter = ColorFilter.lighting(
                                         multiply = Color.White,
                                         add = chipTint
@@ -116,7 +122,7 @@ fun GameBoard(
                                 )
                             }
                         }
-                    } else if (card.name == activeCardName && !cardHasChip) {
+                    } else if (card.name == activeCardName && !isChipOnCard) {
                         Image(
                             painter = painterResource(card.drawableId),
                             contentDescription = card.name,
@@ -136,7 +142,7 @@ fun GameBoard(
                             contentDescription = card.name
                         )
 
-                        if (cardHasChip) {
+                        if (isChipOnCard) {
                             val markerChip = MarkerChip.getChip(moves.getValue(index.toString()))
 
                             Image(

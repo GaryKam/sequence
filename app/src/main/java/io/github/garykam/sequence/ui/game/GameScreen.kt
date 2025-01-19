@@ -70,8 +70,12 @@ fun GameScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        viewModel.leaveGame()
                         onGameLeave()
+                        viewModel.leaveGame()
+
+                        if (viewModel.isGameEnded) {
+                            viewModel.endGame()
+                        }
                     }
                 ) {
                     Text(text = "Yes")
@@ -91,8 +95,9 @@ fun GameScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        viewModel.endGame()
                         onGameLeave()
+                        viewModel.leaveGame()
+                        viewModel.endGame()
                     }
                 ) {
                     Text(text = "Leave")

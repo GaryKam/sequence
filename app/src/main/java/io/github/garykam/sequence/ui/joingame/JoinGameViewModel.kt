@@ -1,5 +1,6 @@
 package io.github.garykam.sequence.ui.joingame
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -85,7 +86,7 @@ class JoinGameViewModel @Inject constructor(
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+                Log.d("JoinGameViewModel", error.toString())
             }
         }
 
@@ -100,7 +101,7 @@ class JoinGameViewModel @Inject constructor(
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+                Log.d("JoinGameViewModel", error.toString())
             }
         }
         database.gameRef.addValueEventListener(_gameListener)
@@ -110,6 +111,7 @@ class JoinGameViewModel @Inject constructor(
         if (this::_gameListener.isInitialized) {
             database.gameRef.removeEventListener(_gameListener)
         }
+
         database.leaveLobby()
     }
 }
