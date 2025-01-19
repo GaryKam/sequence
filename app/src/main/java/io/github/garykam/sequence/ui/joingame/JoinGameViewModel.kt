@@ -4,6 +4,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toUpperCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.DataSnapshot
@@ -38,7 +40,9 @@ class JoinGameViewModel @Inject constructor(
     private lateinit var _gameListener: ValueEventListener
 
     fun updateLobbyCode(code: String) {
-        lobbyCode = code.trim()
+        if (code.trim().length <= 3) {
+            lobbyCode = code.trim().toUpperCase(Locale.current)
+        }
     }
 
     fun findLobby() {

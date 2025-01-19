@@ -6,8 +6,14 @@ enum class MarkerChip(
     val shortName: String,
     val color: Color
 ) {
-    RED("R", Color(255, 71, 91)),
-    GREEN("G", Color(34, 139, 34)),
-    BLUE("B", Color(25, 116, 210)),
-    PURPLE("P", Color(128, 0, 128))
+    RED("R", Color(204, 0, 0)),
+    GREEN("G", Color(0, 153, 0)),
+    BLUE("B", Color(0, 76, 153)),
+    PURPLE("P", Color(76, 0, 153));
+
+    companion object {
+        fun getChip(shortName: String): MarkerChip {
+            return entries.first { shortName == it.shortName }
+        }
+    }
 }

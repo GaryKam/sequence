@@ -64,23 +64,7 @@ fun GameScreen(
         isExitDialogVisible.value = true
     }
 
-    if (viewModel.isGameEnded) {
-        AlertDialog(
-            onDismissRequest = {},
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        viewModel.endGame()
-                        onGameLeave()
-                    }
-                ) {
-                    Text(text = "Leave")
-                }
-            },
-            title = { Text(text = "Game Over") },
-            text = { Text(text = "Your opponent left the game.") }
-        )
-    } else if (isExitDialogVisible.value) {
+    if (isExitDialogVisible.value) {
         AlertDialog(
             onDismissRequest = { isExitDialogVisible.value = false },
             confirmButton = {
@@ -100,6 +84,22 @@ fun GameScreen(
             },
             title = { Text(text = "Quit") },
             text = { Text(text = "Do you want to leave this game?") }
+        )
+    } else if (viewModel.isGameEnded) {
+        AlertDialog(
+            onDismissRequest = {},
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.endGame()
+                        onGameLeave()
+                    }
+                ) {
+                    Text(text = "Leave")
+                }
+            },
+            title = { Text(text = "Game Over") },
+            text = { Text(text = "Your opponent left the game.") }
         )
     }
 }

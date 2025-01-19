@@ -16,7 +16,8 @@ class Database {
     var userRole = ""
         private set
 
-    private var userColor = ""
+    var userColor = ""
+        private set
 
     private val firebase = Firebase.database
 

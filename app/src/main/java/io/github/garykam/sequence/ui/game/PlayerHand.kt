@@ -26,8 +26,8 @@ fun PlayerHand(
     modifier: Modifier = Modifier,
     viewModel: GameViewModel
 ) {
-    val turn by viewModel.turn.collectAsState()
     val hand by viewModel.hand.collectAsState()
+    val turn by viewModel.turn.collectAsState()
 
     Column(
         modifier = modifier,
@@ -35,11 +35,7 @@ fun PlayerHand(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = if (turn == viewModel.userRole) {
-                "Your Turn"
-            } else {
-                "Opponent's Turn"
-            },
+            text = if (turn == viewModel.userRole) "Your Turn" else "Opponent's Turn",
             color = colorResource(R.color.text_on_board),
             style = MaterialTheme.typography.headlineSmall
         )

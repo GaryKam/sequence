@@ -25,8 +25,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import io.github.garykam.sequence.R
-import io.github.garykam.sequence.util.MarkerChip
 import io.github.garykam.sequence.ui.components.Zoomable
+import io.github.garykam.sequence.util.MarkerChip
 
 @Composable
 fun GameBoard(
@@ -38,12 +38,13 @@ fun GameBoard(
     val moves by viewModel.moves.collectAsState()
 
     val infiniteTransition = rememberInfiniteTransition(label = "infinite")
+
     val cardTint by infiniteTransition.animateColor(
         initialValue = Color.White,
         targetValue = Color.Black,
         animationSpec = infiniteRepeatable(
             animation = tween(
-                durationMillis = 700,
+                durationMillis = 500,
                 easing = FastOutLinearInEasing
             ),
             repeatMode = RepeatMode.Reverse
@@ -65,13 +66,57 @@ fun GameBoard(
             itemsIndexed(board) { index, card ->
                 Box(contentAlignment = Alignment.Center) {
                     val cardHasChip = moves.containsKey(index.toString())
-                    val activeCard = if (viewModel.activeCardIndex != -1) {
-                        hand[viewModel.activeCardIndex]
+                    val activeCardName = if (viewModel.activeCardIndex != -1) {
+                        hand[viewModel.activeCardIndex].name
                     } else {
                         null
                     }
 
-                    if (card.name == activeCard?.name && !cardHasChip) {
+                    if (viewModel.jackNames.contains(activeCardName)) {
+                        Image(
+                            painter = painterResource(card.drawableId),
+                            contentDescription = card.name
+                        )
+
+                        if (cardHasChip) {
+                            val markerChip = MarkerChip.getChip(moves.getValue(index.toString()))
+
+                            if (viewModel.isUserChip(markerChip)) {
+                                Image(
+                                    painter = painterResource(R.drawable.chip),
+                                    contentDescription = "marker chip",
+                                    modifier = Modifier.scale(0.9f),
+                                    colorFilter = ColorFilter.lighting(
+                                        multiply = Color.White,
+                                        add = markerChip.color
+                                    )
+                                )
+                            } else {
+                                val chipTint by infiniteTransition.animateColor(
+                                    initialValue = markerChip.color,
+                                    targetValue = Color.White,
+                                    animationSpec = infiniteRepeatable(
+                                        animation = tween(
+                                            durationMillis = 500,
+                                            easing = FastOutLinearInEasing
+                                        ),
+                                        repeatMode = RepeatMode.Reverse
+                                    ),
+                                    label = "chipHighlight"
+                                )
+
+                                Image(
+                                    painter = painterResource(R.drawable.chip),
+                                    contentDescription = "marker chip",
+                                    modifier = Modifier.scale(0.9f),
+                                    colorFilter = ColorFilter.lighting(
+                                        multiply = Color.White,
+                                        add = chipTint
+                                    )
+                                )
+                            }
+                        }
+                    } else if (card.name == activeCardName && !cardHasChip) {
                         Image(
                             painter = painterResource(card.drawableId),
                             contentDescription = card.name,
@@ -90,22 +135,20 @@ fun GameBoard(
                             painter = painterResource(card.drawableId),
                             contentDescription = card.name
                         )
-                    }
 
-                    if (cardHasChip) {
-                        val markerChipColor = MarkerChip.entries
-                            .firstOrNull { it.shortName == moves.getValue(index.toString()) }
-                            ?.color
+                        if (cardHasChip) {
+                            val markerChip = MarkerChip.getChip(moves.getValue(index.toString()))
 
-                        Image(
-                            painter = painterResource(R.drawable.chip),
-                            contentDescription = "marker chip",
-                            modifier = Modifier.scale(0.9f),
-                            colorFilter = ColorFilter.lighting(
-                                multiply = Color.White,
-                                add = markerChipColor ?: Color.Black
+                            Image(
+                                painter = painterResource(R.drawable.chip),
+                                contentDescription = "marker chip",
+                                modifier = Modifier.scale(0.9f),
+                                colorFilter = ColorFilter.lighting(
+                                    multiply = Color.White,
+                                    add = markerChip.color
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }

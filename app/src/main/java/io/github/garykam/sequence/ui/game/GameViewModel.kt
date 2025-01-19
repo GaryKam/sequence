@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.DataSnapshot
@@ -15,6 +16,7 @@ import com.google.firebase.database.getValue
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.garykam.sequence.data.Database
 import io.github.garykam.sequence.model.Card
+import io.github.garykam.sequence.util.MarkerChip
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,6 +36,8 @@ class GameViewModel @Inject constructor(
 
     val userRole: String
         get() = database.userRole
+
+    val jackNames = setOf("cj", "dj", "hj", "sj")
 
     private val _boardSetup = listOf(
         "b", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "b",
@@ -79,7 +83,6 @@ class GameViewModel @Inject constructor(
         }
 
         // Client: jack wild cards.
-        val jackNames = listOf("cj", "dj", "hj", "sj")
         for (cardName in jackNames) {
             val drawableId = context.resources.getIdentifier(
                 cardName,
@@ -90,11 +93,11 @@ class GameViewModel @Inject constructor(
         }
 
         // Server: cards in deck.
-        val cards = (_boardSetup + jackNames - setOf("b"))
+        val cards = (_boardSetup + jackNames + jackNames - setOf("b"))
         database.setupDeckAndHands(cards)
 
         // Server: listen for hand.
-        database.gameRef.child("$userRole/hand").addValueEventListener(
+        database.gameRef.child("${database.userRole}/hand").addValueEventListener(
             object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val hand = snapshot.getValue<List<String>>().orEmpty()
@@ -102,8 +105,11 @@ class GameViewModel @Inject constructor(
                     _hand.update {
                         buildList {
                             for (cardName in hand) {
-                                val card = _board.value.firstOrNull { it.name == cardName }
-                                card?.let { add(it) }
+                                if (jackNames.contains(cardName)) {
+                                    add(_jackCards.first { it.name == cardName} )
+                                } else {
+                                    add(_board.value.first { it.name == cardName })
+                                }
                             }
                         }
                     }
@@ -159,7 +165,7 @@ class GameViewModel @Inject constructor(
     }
 
     fun placeMarkerChip(boardIndex: Int) {
-        if (_turn.value != userRole) {
+        if (_turn.value != database.userRole) {
             return
         }
 
@@ -180,5 +186,9 @@ class GameViewModel @Inject constructor(
 
     fun endGame() {
         database.removeGame()
+    }
+
+    fun isUserChip(markerChip: MarkerChip?): Boolean {
+        return markerChip?.shortName == database.userColor
     }
 }
