@@ -86,8 +86,8 @@ class GameViewModel @Inject constructor(
         }
     }
 
-    private val emptySpace = ' '
-    private val freeSpace = 'x'
+    private val emptySpace = MarkerChip.EMPTY.char.single()
+    private val freeSpace = MarkerChip.FREE.char.single()
     private var _chipArray = Array(10) {
         CharArray(10) { emptySpace }
     }.apply {
@@ -164,19 +164,8 @@ class GameViewModel @Inject constructor(
                 override fun onDataChange(snapshot: DataSnapshot) {
                     _moves.update { snapshot.getValue<Map<String, String>>().orEmpty() }
 
-                    for (row in _chipArray.indices) {
-                        for (col in _chipArray[row].indices) {
-                            if (_chipArray[row][col] != freeSpace) {
-                                _chipArray[row][col] = emptySpace
-                            }
-                        }
-                    }
-                    for ((index, chipColor) in _moves.value.entries) {
-                        val boardIndex = index.toInt()
-                        val row = boardIndex / 10
-                        val col = boardIndex % 10
-                        _chipArray[row][col] = chipColor.single()
-                    }
+                    updateChipArray()
+                    checkGameOver()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -247,5 +236,77 @@ class GameViewModel @Inject constructor(
 
     fun isUserChip(markerChip: MarkerChip?): Boolean {
         return markerChip?.char == database.userColor
+    }
+
+    private fun updateChipArray() {
+        for (row in _chipArray.indices) {
+            for (column in _chipArray[row].indices) {
+                if (_chipArray[row][column] != freeSpace) {
+                    _chipArray[row][column] = emptySpace
+                }
+            }
+        }
+
+        for ((index, chipColor) in _moves.value.entries) {
+            val boardIndex = index.toInt()
+            val row = boardIndex / 10
+            val column = boardIndex % 10
+
+            _chipArray[row][column] = chipColor.single()
+        }
+    }
+
+    private fun checkGameOver() {
+        var sequences = 0
+
+        for (row in _chipArray) {
+            var chipsInARow = 0
+            var chipColor = emptySpace
+
+            for (char in row) {
+                when {
+                    char == emptySpace -> chipsInARow = 0
+                    char == chipColor -> chipsInARow++
+                    char == freeSpace -> chipsInARow++
+                    chipColor == freeSpace && char != emptySpace -> chipsInARow++
+                    char != chipColor -> chipsInARow = 1
+                }
+
+                if (chipsInARow == 5 && chipColor.toString() == database.userColor) {
+                    sequences++
+                    break
+                }
+
+                chipColor = char
+            }
+        }
+
+        for (column in _chipArray[0].indices) {
+            var chipsInARow = 0
+            var chipColor = emptySpace
+
+            for (row in _chipArray.indices) {
+                val char = _chipArray[row][column]
+
+                when {
+                    char == emptySpace -> chipsInARow = 0
+                    char == chipColor -> chipsInARow++
+                    char == freeSpace -> chipsInARow++
+                    chipColor == freeSpace && char != emptySpace -> chipsInARow++
+                    char != chipColor -> chipsInARow = 1
+                }
+
+                if (chipsInARow == 5 && chipColor.toString() == database.userColor) {
+                    sequences++
+                    break
+                }
+
+                chipColor = char
+            }
+        }
+
+        if (sequences == 2) {
+            // TODO
+        }
     }
 }

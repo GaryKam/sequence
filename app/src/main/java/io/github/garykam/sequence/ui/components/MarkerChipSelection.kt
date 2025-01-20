@@ -46,7 +46,7 @@ fun MarkerChipSelection(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            for ((index, markerChip) in items.withIndex()) {
+            for ((index, markerChip) in items.filter { it.color != null }.withIndex()) {
                 IconButton(onClick = { onClick(index) }) {
                     Box(
                         modifier = Modifier
@@ -62,7 +62,7 @@ fun MarkerChipSelection(
                             .padding(5.dp)
                             .clip(CircleShape)
                             .fillMaxSize()
-                            .background(markerChip.color)
+                            .background(markerChip.color!!)
                     )
                 }
             }

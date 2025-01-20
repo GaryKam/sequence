@@ -84,12 +84,12 @@ fun GameBoard(
                                     modifier = Modifier.scale(0.9f),
                                     colorFilter = ColorFilter.lighting(
                                         multiply = Color.White,
-                                        add = markerChip.color
+                                        add = markerChip.color!!
                                     )
                                 )
                             } else {
                                 val chipTint by infiniteTransition.animateColor(
-                                    initialValue = markerChip.color,
+                                    initialValue = markerChip.color!!,
                                     targetValue = Color.White,
                                     animationSpec = infiniteRepeatable(
                                         animation = tween(
@@ -132,7 +132,7 @@ fun GameBoard(
                                 modifier = Modifier.scale(0.9f),
                                 colorFilter = ColorFilter.lighting(
                                     multiply = Color.White,
-                                    add = markerChip.color
+                                    add = markerChip.color!!
                                 )
                             )
                         } else {
@@ -175,7 +175,7 @@ fun GameBoard(
                                 modifier = Modifier.scale(0.9f),
                                 colorFilter = ColorFilter.lighting(
                                     multiply = Color.White,
-                                    add = markerChip.color
+                                    add = markerChip.color!!
                                 )
                             )
                         }
