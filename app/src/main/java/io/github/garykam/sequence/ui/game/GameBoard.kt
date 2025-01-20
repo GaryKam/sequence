@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.garykam.sequence.R
 import io.github.garykam.sequence.ui.components.Zoomable
@@ -36,7 +37,7 @@ fun GameBoard(
     val board by viewModel.board.collectAsState()
     val moves by viewModel.moves.collectAsState()
 
-    val infiniteTransition = rememberInfiniteTransition(label = "infinite")
+    val infiniteTransition = rememberInfiniteTransition(label = stringResource(R.string.infinite))
 
     val cardTint by infiniteTransition.animateColor(
         initialValue = Color.White,
@@ -48,7 +49,7 @@ fun GameBoard(
             ),
             repeatMode = RepeatMode.Reverse
         ),
-        label = "cardHighlight"
+        label = stringResource(R.string.card_highlight)
     )
 
     Zoomable(modifier = modifier) {
@@ -79,7 +80,7 @@ fun GameBoard(
                             if (viewModel.isUserChip(markerChip)) {
                                 Image( // User chip.
                                     painter = painterResource(R.drawable.chip),
-                                    contentDescription = "marker chip",
+                                    contentDescription = stringResource(R.string.marker_chip),
                                     modifier = Modifier.scale(0.9f),
                                     colorFilter = ColorFilter.lighting(
                                         multiply = Color.White,
@@ -97,12 +98,12 @@ fun GameBoard(
                                         ),
                                         repeatMode = RepeatMode.Reverse
                                     ),
-                                    label = "chipHighlight"
+                                    label = stringResource(R.string.chip_highlight)
                                 )
 
                                 Image( // Tinted opponent chip.
                                     painter = painterResource(R.drawable.chip),
-                                    contentDescription = "marker chip",
+                                    contentDescription = stringResource(R.string.marker_chip),
                                     modifier = Modifier
                                         .scale(0.9f)
                                         .clickable(
@@ -127,7 +128,7 @@ fun GameBoard(
                             )
                             Image(
                                 painter = painterResource(R.drawable.chip),
-                                contentDescription = "marker chip",
+                                contentDescription = stringResource(R.string.marker_chip),
                                 modifier = Modifier.scale(0.9f),
                                 colorFilter = ColorFilter.lighting(
                                     multiply = Color.White,
@@ -170,7 +171,7 @@ fun GameBoard(
 
                             Image(
                                 painter = painterResource(R.drawable.chip),
-                                contentDescription = "marker chip",
+                                contentDescription = stringResource(R.string.marker_chip),
                                 modifier = Modifier.scale(0.9f),
                                 colorFilter = ColorFilter.lighting(
                                     multiply = Color.White,

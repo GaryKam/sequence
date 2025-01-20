@@ -1,4 +1,43 @@
 <resources>
+    <!-- General -->
     <string name="app_name">Sequence</string>
-    <string name="title_activity_create_game">CreateGame</string>
+    <string name="create_game">Create a Game</string>
+    <string name="join_game">Join a Game</string>
+    <string name="choose_color">Choose your color:</string>
+    <string name="leave">Leave</string>
+
+    <!-- Create Game Screen -->
+    <string name="create_lobby">Create Lobby</string>
+    <string name="create_lobby_code">Lobby Code: %1$s</string>
+    <string name="create_lobby_wait">Waiting for guest…</string>
+    <string name="create_lobby_1_player">1/2</string>
+    <string name="create_lobby_2_player">2/2</string>
+    <string name="start_game">Start Game</string>
+
+    <!-- Join Game Screen -->
+    <string name="join_lobby">Join Lobby</string>
+    <string name="join_lobby_code">Lobby Code</string>
+    <string name="join_lobby_wait">Waiting for host…</string>
+    <string name="lobby_closed">Lobby Closed</string>
+    <string name="lobby_closed_text">The host left the lobby.</string>
+
+    <!-- Game Screen -->
+    <string name="user_turn">Your Turn</string>
+    <string name="opponent_turn">Opponent\'s Turn</string>
+    <string name="one_eyed_jack_text">Remove an opponent\'s chip</string>
+    <string name="two_eyed_jack_text">Place a chip on any open card</string>
+    <string name="quit_game">Quit</string>
+    <string name="quit_game_text">Do you want to leave this game?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="game_over">Game Over</string>
+    <string name="game_over_text">Your opponent left the game.</string>
+
+    <!-- Content Description -->
+    <string name="back">back</string>
+    <string name="infinite">infinite</string>
+    <string name="card_height">card height</string>
+    <string name="marker_chip">marker chip</string>
+    <string name="card_highlight">card highlight</string>
+    <string name="chip_highlight">chip highlight</string>
 </resources>

@@ -30,10 +30,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import io.github.garykam.sequence.R
 import io.github.garykam.sequence.ui.components.MarkerChipSelection
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,7 +64,7 @@ fun JoinGameScreen(
         },
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(text = "Join a Game") },
+                title = { Text(text = stringResource(R.string.join_game)) },
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -73,7 +75,7 @@ fun JoinGameScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "back"
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
                 }
@@ -92,7 +94,7 @@ fun JoinGameScreen(
                 OutlinedTextField(
                     value = viewModel.lobbyCode,
                     onValueChange = { viewModel.updateLobbyCode(it) },
-                    label = { Text(text = "Lobby Code") },
+                    label = { Text(text = stringResource(R.string.join_lobby_code)) },
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Characters,
                         imeAction = ImeAction.Done
@@ -122,12 +124,12 @@ fun JoinGameScreen(
                     },
                     modifier = Modifier.padding(horizontal = 40.dp)
                 ) {
-                    Text(text = "Join Lobby")
+                    Text(text = stringResource(R.string.join_lobby))
                 }
             }
             AnimatedVisibility(visible = viewModel.step == Step.WAIT_IN_LOBBY) {
                 Text(
-                    text = "Waiting for host...",
+                    text = stringResource(R.string.join_lobby_wait),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -143,11 +145,11 @@ fun JoinGameScreen(
                             viewModel.leaveLobby()
                         }
                     ) {
-                        Text(text = "Leave")
+                        Text(text = stringResource(R.string.leave))
                     }
                 },
-                title = { Text(text = "Lobby Closed") },
-                text = { Text(text = "The host left the lobby.") }
+                title = { Text(text = stringResource(R.string.lobby_closed)) },
+                text = { Text(text = stringResource(R.string.lobby_closed_text)) }
             )
         }
     }

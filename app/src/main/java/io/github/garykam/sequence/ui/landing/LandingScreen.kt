@@ -16,7 +16,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import io.github.garykam.sequence.R
 import io.github.garykam.sequence.util.ScreenUtil
 
 @Composable
@@ -33,7 +35,7 @@ fun LandingScreen(
 
     Box(modifier = modifier) {
         Text(
-            text = "Sequence",
+            text = stringResource(R.string.app_name),
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = 100.dp),
@@ -52,14 +54,14 @@ fun LandingScreen(
                     onClick = onJoinGameClick,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = "Join a Game")
+                    Text(text = stringResource(R.string.join_game))
                 }
                 Spacer(modifier = Modifier.height(20.dp))
                 Button(
                     onClick = onCreateGameClick,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = "Create a Game")
+                    Text(text = stringResource(R.string.create_game))
                 }
             }
             Box(modifier = Modifier.weight(0.25f))

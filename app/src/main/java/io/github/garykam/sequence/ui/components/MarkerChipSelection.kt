@@ -20,7 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import io.github.garykam.sequence.R
 import io.github.garykam.sequence.util.MarkerChip
 
 @Composable
@@ -35,7 +37,7 @@ fun MarkerChipSelection(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Choose your color:",
+            text = stringResource(R.string.choose_color),
             style = MaterialTheme.typography.titleLarge
         )
         Spacer(modifier = Modifier.height(10.dp))

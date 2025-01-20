@@ -24,8 +24,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import io.github.garykam.sequence.R
 import io.github.garykam.sequence.ui.components.MarkerChipSelection
 import io.github.garykam.sequence.util.MarkerChip
 
@@ -46,7 +48,7 @@ fun CreateGameScreen(
         modifier = modifier,
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(text = "Create a Game") },
+                title = { Text(text = stringResource(R.string.create_game)) },
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -56,7 +58,7 @@ fun CreateGameScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "back"
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
                 }
@@ -85,12 +87,12 @@ fun CreateGameScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Lobby Code: ${viewModel.lobbyCode}",
+                        text = stringResource(R.string.create_lobby_code, viewModel.lobbyCode),
                         modifier = Modifier.padding(bottom = 50.dp),
                         style = MaterialTheme.typography.titleMedium
                     )
                     Text(
-                        text = "Waiting for guest...",
+                        text = stringResource(R.string.create_lobby_wait),
                         modifier = Modifier.padding(bottom = 5.dp),
                         style = MaterialTheme.typography.bodyMedium
                     )
@@ -105,9 +107,9 @@ fun CreateGameScreen(
                         )
                         Text(
                             text = if (viewModel.step == Step.WAIT_IN_LOBBY) {
-                                "1/2"
+                                stringResource(R.string.create_lobby_1_player)
                             } else {
-                                "2/2"
+                                stringResource(R.string.create_lobby_2_player)
                             },
                             style = MaterialTheme.typography.labelLarge
                         )
@@ -129,9 +131,9 @@ fun CreateGameScreen(
             ) {
                 Text(
                     text = if (viewModel.step == Step.SELECT_CHIP) {
-                        "Create Lobby"
+                        stringResource(R.string.create_lobby)
                     } else {
-                        "Start Game"
+                        stringResource(R.string.start_game)
                     }
                 )
             }

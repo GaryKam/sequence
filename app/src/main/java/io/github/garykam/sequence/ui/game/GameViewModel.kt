@@ -86,143 +86,143 @@ class GameViewModel @Inject constructor(
         }
     }
 
-@SuppressLint("DiscouragedApi")
-fun init(context: Context) {
-    // Client: grid of cards.
-    _board.value = buildList {
-        for (cardName in _boardSetup) {
+    @SuppressLint("DiscouragedApi")
+    fun init(context: Context) {
+        // Client: grid of cards.
+        _board.value = buildList {
+            for (cardName in _boardSetup) {
+                val drawableId = context.resources.getIdentifier(
+                    cardName,
+                    "drawable",
+                    context.packageName
+                )
+                add(Card(cardName, drawableId))
+            }
+        }
+
+        // Client: jack wild cards.
+        for (cardName in jackNames) {
             val drawableId = context.resources.getIdentifier(
                 cardName,
                 "drawable",
                 context.packageName
             )
-            add(Card(cardName, drawableId))
+            _jackCards.add(Card(cardName, drawableId))
         }
-    }
 
-    // Client: jack wild cards.
-    for (cardName in jackNames) {
-        val drawableId = context.resources.getIdentifier(
-            cardName,
-            "drawable",
-            context.packageName
-        )
-        _jackCards.add(Card(cardName, drawableId))
-    }
+        // Server: cards in deck.
+        val cards = (_boardSetup + jackNames + jackNames - setOf("b"))
+        database.setupDeckAndHands(cards)
 
-    // Server: cards in deck.
-    val cards = (_boardSetup + jackNames + jackNames - setOf("b"))
-    database.setupDeckAndHands(cards)
+        // Server: listen for hand.
+        database.gameRef.child("${database.userRole}/hand").addValueEventListener(
+            object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val hand = snapshot.getValue<List<String>>().orEmpty()
 
-    // Server: listen for hand.
-    database.gameRef.child("${database.userRole}/hand").addValueEventListener(
-        object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val hand = snapshot.getValue<List<String>>().orEmpty()
+                    if (isGameEnded) {
+                        return
+                    }
 
-                if (isGameEnded) {
-                    return
-                }
-
-                _hand.update {
-                    buildList {
-                        for (cardName in hand) {
-                            if (jackNames.contains(cardName)) {
-                                add(_jackCards.first { it.name == cardName })
-                            } else {
-                                add(_board.value.first { it.name == cardName })
+                    _hand.update {
+                        buildList {
+                            for (cardName in hand) {
+                                if (jackNames.contains(cardName)) {
+                                    add(_jackCards.first { it.name == cardName })
+                                } else {
+                                    add(_board.value.first { it.name == cardName })
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                Log.d("GameViewModel", error.toString())
-            }
-        }.also {
-            _gameListeners.add(it)
-        }
-    )
-
-    // Server: listen for moves.
-    database.gameRef.child("moves").addValueEventListener(
-        object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                _moves.update { snapshot.getValue<Map<String, String>>().orEmpty() }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.d("GameViewModel", error.toString())
-            }
-        }.also {
-            _gameListeners.add(it)
-        }
-    )
-
-    // Server: listen for turn.
-    database.gameRef.child("turn").addValueEventListener(
-        object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val turn = snapshot.getValue<String>().orEmpty()
-
-                if (turn.isEmpty()) {
-                    leaveGame()
-                    isGameEnded = true
-                } else {
-                    _turn.update { turn }
+                override fun onCancelled(error: DatabaseError) {
+                    Log.d("GameViewModel", error.toString())
                 }
+            }.also {
+                _gameListeners.add(it)
             }
+        )
 
-            override fun onCancelled(error: DatabaseError) {
-                Log.d("GameViewModel", error.toString())
+        // Server: listen for moves.
+        database.gameRef.child("moves").addValueEventListener(
+            object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    _moves.update { snapshot.getValue<Map<String, String>>().orEmpty() }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.d("GameViewModel", error.toString())
+                }
+            }.also {
+                _gameListeners.add(it)
             }
-        }.also {
-            _gameListeners.add(it)
+        )
+
+        // Server: listen for turn.
+        database.gameRef.child("turn").addValueEventListener(
+            object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val turn = snapshot.getValue<String>().orEmpty()
+
+                    if (turn.isEmpty()) {
+                        leaveGame()
+                        isGameEnded = true
+                    } else {
+                        _turn.update { turn }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.d("GameViewModel", error.toString())
+                }
+            }.also {
+                _gameListeners.add(it)
+            }
+        )
+    }
+
+    fun selectCardFromHand(cardIndex: Int) {
+        activeCardIndex = if (activeCardIndex == cardIndex) -1 else cardIndex
+    }
+
+    fun placeMarkerChip(boardIndex: Int) {
+        if (_turn.value != database.userRole) {
+            return
         }
-    )
-}
 
-fun selectCardFromHand(cardIndex: Int) {
-    activeCardIndex = if (activeCardIndex == cardIndex) -1 else cardIndex
-}
+        if (_blankCardIndices.contains(boardIndex)) {
+            return
+        }
 
-fun placeMarkerChip(boardIndex: Int) {
-    if (_turn.value != database.userRole) {
-        return
+        viewModelScope.launch(Dispatchers.IO) {
+            database.addMove(boardIndex, _moves.value, _hand.value, activeCardIndex)
+            activeCardIndex = -1
+        }
     }
 
-    if (_blankCardIndices.contains(boardIndex)) {
-        return
+    fun removeMarkerChip(boardIndex: Int) {
+        if (_turn.value != database.userRole) {
+            return
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            database.addMove(boardIndex, _moves.value, _hand.value, activeCardIndex)
+            activeCardIndex = -1
+        }
     }
 
-    viewModelScope.launch(Dispatchers.IO) {
-        database.addMove(boardIndex, _moves.value, _hand.value, activeCardIndex)
-        activeCardIndex = -1
-    }
-}
-
-fun removeMarkerChip(boardIndex: Int) {
-    if (_turn.value != database.userRole) {
-        return
+    fun leaveGame() {
+        _gameListeners.forEach { database.gameRef.removeEventListener(it) }
+        database.stopGame()
     }
 
-    viewModelScope.launch(Dispatchers.IO) {
-        database.addMove(boardIndex, _moves.value, _hand.value, activeCardIndex)
-        activeCardIndex = -1
+    fun endGame() {
+        database.removeGame()
     }
-}
 
-fun leaveGame() {
-    _gameListeners.forEach { database.gameRef.removeEventListener(it) }
-    database.stopGame()
-}
-
-fun endGame() {
-    database.removeGame()
-}
-
-fun isUserChip(markerChip: MarkerChip?): Boolean {
-    return markerChip?.shortName == database.userColor
-}
+    fun isUserChip(markerChip: MarkerChip?): Boolean {
+        return markerChip?.shortName == database.userColor
+    }
 }

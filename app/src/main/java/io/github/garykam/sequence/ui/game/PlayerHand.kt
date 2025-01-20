@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import io.github.garykam.sequence.R
@@ -36,19 +37,23 @@ fun PlayerHand(
     ) {
         if (viewModel.oneEyedJacks.contains(viewModel.card?.name)) {
             Text(
-                text = "Remove an opponent's chip",
+                text = stringResource(R.string.one_eyed_jack_text),
                 color = colorResource(R.color.text_on_board),
                 style = MaterialTheme.typography.bodySmall
             )
         } else if (viewModel.twoEyedJacks.contains(viewModel.card?.name)) {
             Text(
-                text = "Place a chip on any open card",
+                text = stringResource(R.string.two_eyed_jack_text),
                 color = colorResource(R.color.text_on_board),
                 style = MaterialTheme.typography.bodySmall
             )
         }
         Text(
-            text = if (turn == viewModel.userRole) "Your Turn" else "Opponent's Turn",
+            text = if (turn == viewModel.userRole) {
+                stringResource(R.string.user_turn)
+            } else {
+                stringResource(R.string.opponent_turn)
+            },
             color = colorResource(R.color.text_on_board),
             style = MaterialTheme.typography.headlineSmall
         )
@@ -60,7 +65,7 @@ fun PlayerHand(
             for ((index, card) in hand.withIndex()) {
                 val cardOffset by animateIntAsState(
                     targetValue = if (index == viewModel.activeCardIndex) -30 else 0,
-                    label = "cardHeight"
+                    label = stringResource(R.string.card_height)
                 )
 
                 Image(
@@ -68,7 +73,12 @@ fun PlayerHand(
                     contentDescription = card.name,
                     modifier = Modifier
                         .size(50.dp, 75.dp)
-                        .offset { IntOffset(0, cardOffset) }
+                        .offset {
+                            IntOffset(
+                                x = 0,
+                                y = cardOffset
+                            )
+                        }
                         .clickable(
                             interactionSource = null,
                             indication = null,

@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import io.github.garykam.sequence.R
 import io.github.garykam.sequence.util.ScreenUtil
@@ -78,16 +79,16 @@ fun GameScreen(
                         }
                     }
                 ) {
-                    Text(text = "Yes")
+                    Text(text = stringResource(R.string.yes))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { isExitDialogVisible.value = false }) {
-                    Text(text = "No")
+                    Text(text = stringResource(R.string.no))
                 }
             },
-            title = { Text(text = "Quit") },
-            text = { Text(text = "Do you want to leave this game?") }
+            title = { Text(text = stringResource(R.string.quit_game)) },
+            text = { Text(text = stringResource(R.string.quit_game_text)) }
         )
     } else if (viewModel.isGameEnded) {
         AlertDialog(
@@ -100,11 +101,11 @@ fun GameScreen(
                         viewModel.endGame()
                     }
                 ) {
-                    Text(text = "Leave")
+                    Text(text = stringResource(R.string.leave))
                 }
             },
-            title = { Text(text = "Game Over") },
-            text = { Text(text = "Your opponent left the game.") }
+            title = { Text(text = stringResource(R.string.game_over)) },
+            text = { Text(text = stringResource(R.string.game_over_text)) }
         )
     }
 }
