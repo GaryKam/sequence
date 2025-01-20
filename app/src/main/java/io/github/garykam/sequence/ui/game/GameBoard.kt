@@ -34,7 +34,6 @@ fun GameBoard(
     viewModel: GameViewModel
 ) {
     val board by viewModel.board.collectAsState()
-    val hand by viewModel.hand.collectAsState()
     val moves by viewModel.moves.collectAsState()
 
     val infiniteTransition = rememberInfiniteTransition(label = "infinite")
@@ -66,14 +65,10 @@ fun GameBoard(
             itemsIndexed(board) { index, card ->
                 Box(contentAlignment = Alignment.Center) {
                     val isChipOnCard = moves.containsKey(index.toString())
-                    val activeCardName = if (viewModel.activeCardIndex != -1) {
-                        hand[viewModel.activeCardIndex].name
-                    } else {
-                        null
-                    }
+                    val activeCardName = viewModel.card?.name
 
-                    if (viewModel.jackNames.contains(activeCardName)) {
-                        Image(
+                    if (viewModel.oneEyedJacks.contains(activeCardName)) {
+                        Image( // Special jack: remove opponent chip.
                             painter = painterResource(card.drawableId),
                             contentDescription = card.name
                         )
@@ -82,7 +77,7 @@ fun GameBoard(
                             val markerChip = MarkerChip.getChip(moves.getValue(index.toString()))
 
                             if (viewModel.isUserChip(markerChip)) {
-                                Image(
+                                Image( // User chip.
                                     painter = painterResource(R.drawable.chip),
                                     contentDescription = "marker chip",
                                     modifier = Modifier.scale(0.9f),
@@ -105,7 +100,7 @@ fun GameBoard(
                                     label = "chipHighlight"
                                 )
 
-                                Image(
+                                Image( // Tinted opponent chip.
                                     painter = painterResource(R.drawable.chip),
                                     contentDescription = "marker chip",
                                     modifier = Modifier
@@ -122,8 +117,36 @@ fun GameBoard(
                                 )
                             }
                         }
+                    } else if (viewModel.twoEyedJacks.contains(activeCardName)) {
+                        if (isChipOnCard) { // Special jack: place chip on open card.
+                            val markerChip = MarkerChip.getChip(moves.getValue(index.toString()))
+
+                            Image(
+                                painter = painterResource(card.drawableId),
+                                contentDescription = card.name
+                            )
+                            Image(
+                                painter = painterResource(R.drawable.chip),
+                                contentDescription = "marker chip",
+                                modifier = Modifier.scale(0.9f),
+                                colorFilter = ColorFilter.lighting(
+                                    multiply = Color.White,
+                                    add = markerChip.color
+                                )
+                            )
+                        } else {
+                            Image(
+                                painter = painterResource(card.drawableId),
+                                contentDescription = card.name,
+                                modifier = Modifier.clickable(
+                                    interactionSource = null,
+                                    indication = null,
+                                    onClick = { viewModel.placeMarkerChip(index) }
+                                )
+                            )
+                        }
                     } else if (card.name == activeCardName && !isChipOnCard) {
-                        Image(
+                        Image( // Tinted active card.
                             painter = painterResource(card.drawableId),
                             contentDescription = card.name,
                             modifier = Modifier.clickable(
@@ -137,7 +160,7 @@ fun GameBoard(
                             )
                         )
                     } else {
-                        Image(
+                        Image( // Plain card.
                             painter = painterResource(card.drawableId),
                             contentDescription = card.name
                         )

@@ -31,16 +31,29 @@ fun PlayerHand(
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Bottom,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        if (viewModel.oneEyedJacks.contains(viewModel.card?.name)) {
+            Text(
+                text = "Remove an opponent's chip",
+                color = colorResource(R.color.text_on_board),
+                style = MaterialTheme.typography.bodySmall
+            )
+        } else if (viewModel.twoEyedJacks.contains(viewModel.card?.name)) {
+            Text(
+                text = "Place a chip on any open card",
+                color = colorResource(R.color.text_on_board),
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
         Text(
             text = if (turn == viewModel.userRole) "Your Turn" else "Opponent's Turn",
             color = colorResource(R.color.text_on_board),
             style = MaterialTheme.typography.headlineSmall
         )
         Row(
-            modifier = modifier,
+            modifier = Modifier,
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
