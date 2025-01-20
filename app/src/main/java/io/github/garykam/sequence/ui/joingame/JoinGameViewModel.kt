@@ -47,6 +47,10 @@ class JoinGameViewModel @Inject constructor(
     }
 
     fun findLobby() {
+        if (lobbyCode.isEmpty()) {
+            return
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
             if (!database.findLobby(lobbyCode)) {
                 return@launch
@@ -58,7 +62,7 @@ class JoinGameViewModel @Inject constructor(
                     if (task.isSuccessful && task.result.exists()) {
                         val hostColor = task.result.child("host/color").getValue(String::class.java)
                         val markerChips = MarkerChip.entries
-                            .filter { it.shortName != hostColor }
+                            .filter { it.char != hostColor }
                             .toList()
                         this@JoinGameViewModel.markerChips = markerChips
                         step = Step.SELECT_CHIP
@@ -72,7 +76,7 @@ class JoinGameViewModel @Inject constructor(
     }
 
     fun joinLobby(onGameStart: () -> Unit) {
-        database.joinLobby(markerChips[markerChipIndex].shortName)
+        database.joinLobby(markerChips[markerChipIndex].char)
         step = Step.WAIT_IN_LOBBY
 
         _gameListener = object : ValueEventListener {

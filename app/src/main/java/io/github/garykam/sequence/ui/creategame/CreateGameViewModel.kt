@@ -36,7 +36,7 @@ class CreateGameViewModel @Inject constructor(
     fun createLobby() {
         val charPool = ('A'..'Z') + ('0'..'9')
         val lobbyCode = List(3) { charPool.random() }.joinToString("")
-        database.createLobby(lobbyCode, MarkerChip.entries[markerChipIndex].shortName)
+        database.createLobby(lobbyCode, MarkerChip.entries[markerChipIndex].char)
         this.lobbyCode = lobbyCode
         step = Step.WAIT_IN_LOBBY
 

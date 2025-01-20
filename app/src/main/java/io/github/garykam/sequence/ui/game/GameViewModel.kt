@@ -86,6 +86,17 @@ class GameViewModel @Inject constructor(
         }
     }
 
+    private val emptySpace = ' '
+    private val freeSpace = 'x'
+    private var _chipArray = Array(10) {
+        CharArray(10) { emptySpace }
+    }.apply {
+        this[0][0] = freeSpace
+        this[0][9] = freeSpace
+        this[9][0] = freeSpace
+        this[9][9] = freeSpace
+    }
+
     @SuppressLint("DiscouragedApi")
     fun init(context: Context) {
         // Client: grid of cards.
@@ -96,6 +107,7 @@ class GameViewModel @Inject constructor(
                     "drawable",
                     context.packageName
                 )
+
                 add(Card(cardName, drawableId))
             }
         }
@@ -107,6 +119,7 @@ class GameViewModel @Inject constructor(
                 "drawable",
                 context.packageName
             )
+
             _jackCards.add(Card(cardName, drawableId))
         }
 
@@ -150,6 +163,20 @@ class GameViewModel @Inject constructor(
             object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     _moves.update { snapshot.getValue<Map<String, String>>().orEmpty() }
+
+                    for (row in _chipArray.indices) {
+                        for (col in _chipArray[row].indices) {
+                            if (_chipArray[row][col] != freeSpace) {
+                                _chipArray[row][col] = emptySpace
+                            }
+                        }
+                    }
+                    for ((index, chipColor) in _moves.value.entries) {
+                        val boardIndex = index.toInt()
+                        val row = boardIndex / 10
+                        val col = boardIndex % 10
+                        _chipArray[row][col] = chipColor.single()
+                    }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -188,11 +215,7 @@ class GameViewModel @Inject constructor(
     }
 
     fun placeMarkerChip(boardIndex: Int) {
-        if (_turn.value != database.userRole) {
-            return
-        }
-
-        if (_blankCardIndices.contains(boardIndex)) {
+        if (_turn.value != database.userRole || _blankCardIndices.contains(boardIndex)) {
             return
         }
 
@@ -223,6 +246,6 @@ class GameViewModel @Inject constructor(
     }
 
     fun isUserChip(markerChip: MarkerChip?): Boolean {
-        return markerChip?.shortName == database.userColor
+        return markerChip?.char == database.userColor
     }
 }

@@ -1,12 +1,15 @@
 package io.github.garykam.sequence.ui.game
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -48,17 +51,24 @@ fun PlayerHand(
                 style = MaterialTheme.typography.bodySmall
             )
         }
-        Text(
-            text = if (turn == viewModel.userRole) {
-                stringResource(R.string.user_turn)
-            } else {
-                stringResource(R.string.opponent_turn)
-            },
-            color = colorResource(R.color.text_on_board),
-            style = MaterialTheme.typography.headlineSmall
-        )
+        AnimatedVisibility(visible = turn == viewModel.userRole) {
+            Text(
+                text = stringResource(R.string.user_turn),
+                color = colorResource(R.color.text_on_board),
+                style = MaterialTheme.typography.headlineSmall
+            )
+        }
+        AnimatedVisibility(visible = turn != viewModel.userRole) {
+            Text(
+                text = stringResource(R.string.opponent_turn),
+                color = colorResource(R.color.text_on_board),
+                style = MaterialTheme.typography.headlineSmall
+            )
+        }
         Row(
-            modifier = Modifier,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {

@@ -44,7 +44,7 @@ fun GameScreen(
     ) {
         GameBoard(
             modifier = Modifier
-                .weight(0.85f)
+                .weight(0.82f)
                 .fillMaxSize()
                 .background(colorResource(R.color.board)),
             viewModel = viewModel
@@ -52,7 +52,7 @@ fun GameScreen(
 
         PlayerHand(
             modifier = Modifier
-                .weight(0.15f)
+                .weight(0.18f)
                 .fillMaxWidth()
                 .background(colorResource(R.color.board)),
             viewModel = viewModel

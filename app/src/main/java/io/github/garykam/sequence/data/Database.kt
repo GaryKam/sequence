@@ -51,11 +51,9 @@ class Database {
         return lobbyExists
     }
 
-    fun joinLobby(
-        guestColor: String
-    ) {
+    fun joinLobby(guestColor: String) {
         userColor = guestColor
-        gameRef.child("guest/color").setValue(guestColor)
+        gameRef.child("guest/color").setValue(guestColor.toString())
     }
 
     fun leaveLobby() {
