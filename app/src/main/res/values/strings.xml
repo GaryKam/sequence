@@ -32,6 +32,9 @@
     <string name="no">No</string>
     <string name="game_over">Game Over</string>
     <string name="game_over_text">Your opponent left the game.</string>
+    <string name="game_won">You won!</string>
+    <string name="game_lost">You lost!</string>
+    <string name="ok">Okay</string>
 
     <!-- Content Description -->
     <string name="back">back</string>

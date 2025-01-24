@@ -11,6 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -59,13 +61,31 @@ fun GameScreen(
         )
     }
 
+    val winner by viewModel.winner.collectAsState()
     val isExitDialogVisible = remember { mutableStateOf(false) }
 
     BackHandler {
         isExitDialogVisible.value = true
     }
 
-    if (isExitDialogVisible.value) {
+    if (winner.isNotEmpty()) {
+        AlertDialog(
+            onDismissRequest = {},
+            confirmButton = {
+                TextButton(onClick = { viewModel.hideWinner() }) {
+                    Text(text = stringResource(R.string.ok))
+                }
+            },
+            title = { Text(text = stringResource(R.string.game_over)) },
+            text = {
+                if (winner == viewModel.userRole) {
+                    Text(text = stringResource(R.string.game_won))
+                } else {
+                    Text(text = stringResource(R.string.game_lost))
+                }
+            }
+        )
+    } else if (isExitDialogVisible.value) {
         AlertDialog(
             onDismissRequest = { isExitDialogVisible.value = false },
             confirmButton = {

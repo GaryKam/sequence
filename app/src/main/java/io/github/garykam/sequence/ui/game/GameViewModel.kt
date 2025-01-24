@@ -74,6 +74,9 @@ class GameViewModel @Inject constructor(
     private var _turn = MutableStateFlow("")
     val turn = _turn.asStateFlow()
 
+    private var _winner = MutableStateFlow("")
+    val winner = _winner.asStateFlow()
+
     private var _jackCards = mutableSetOf<Card>()
 
     private var _gameListeners = mutableListOf<ValueEventListener>()
@@ -96,6 +99,8 @@ class GameViewModel @Inject constructor(
         this[9][0] = freeSpace
         this[9][9] = freeSpace
     }
+
+    private var isWinnerDeclared = false
 
     @SuppressLint("DiscouragedApi")
     fun init(context: Context) {
@@ -197,6 +202,21 @@ class GameViewModel @Inject constructor(
                 _gameListeners.add(it)
             }
         )
+
+        // Server: listen for winner.
+        database.gameRef.child("winner").addValueEventListener(
+            object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    _winner.update { snapshot.getValue<String>().orEmpty() }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.d("GameViewModel", error.toString())
+                }
+            }.also {
+                _gameListeners.add(it)
+            }
+        )
     }
 
     fun selectCardFromHand(cardIndex: Int) {
@@ -204,7 +224,10 @@ class GameViewModel @Inject constructor(
     }
 
     fun placeMarkerChip(boardIndex: Int) {
-        if (_turn.value != database.userRole || _blankCardIndices.contains(boardIndex)) {
+        if (_turn.value != database.userRole
+            || _blankCardIndices.contains(boardIndex)
+            || isWinnerDeclared
+        ) {
             return
         }
 
@@ -215,7 +238,7 @@ class GameViewModel @Inject constructor(
     }
 
     fun removeMarkerChip(boardIndex: Int) {
-        if (_turn.value != database.userRole) {
+        if (_turn.value != database.userRole || isWinnerDeclared) {
             return
         }
 
@@ -236,6 +259,10 @@ class GameViewModel @Inject constructor(
 
     fun isUserChip(markerChip: MarkerChip?): Boolean {
         return markerChip?.char == database.userColor
+    }
+
+    fun hideWinner() {
+        _winner.update { "" }
     }
 
     private fun updateChipArray() {
@@ -259,6 +286,7 @@ class GameViewModel @Inject constructor(
     private fun checkGameOver() {
         var sequences = 0
 
+        // Horizontal sequence.
         for (row in _chipArray) {
             var chipsInARow = 0
             var chipColor = emptySpace
@@ -281,6 +309,7 @@ class GameViewModel @Inject constructor(
             }
         }
 
+        // Vertical sequence.
         for (column in _chipArray[0].indices) {
             var chipsInARow = 0
             var chipColor = emptySpace
@@ -306,7 +335,8 @@ class GameViewModel @Inject constructor(
         }
 
         if (sequences == 2) {
-            // TODO
+            database.winGame()
+            isWinnerDeclared = true
         }
     }
 }

@@ -122,6 +122,10 @@ class Database {
         gameRef.updateChildren(update)
     }
 
+    fun winGame() {
+        gameRef.child("winner").setValue(userRole)
+    }
+
     fun stopGame() {
         gameRef.child("turn").removeValue()
     }
