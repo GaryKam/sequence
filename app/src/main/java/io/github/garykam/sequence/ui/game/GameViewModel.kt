@@ -44,8 +44,8 @@ class GameViewModel @Inject constructor(
     val userRole: String
         get() = database.userRole
 
-    val oneEyedJacks = setOf("cj", "sj")
-    val twoEyedJacks = setOf("dj", "hj")
+    val oneEyedJacks = setOf("hj", "sj")
+    val twoEyedJacks = setOf("dj", "cj")
 
     private val jackNames = oneEyedJacks + twoEyedJacks
 
