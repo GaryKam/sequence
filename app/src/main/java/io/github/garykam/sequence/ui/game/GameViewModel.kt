@@ -334,6 +334,35 @@ class GameViewModel @Inject constructor(
             }
         }
 
+        // Diagonal sequence.
+        for (row in _chipArray.indices) {
+            var chipsInARow = 0
+            var chipColor = emptySpace
+            var i = row
+            var j = 0
+
+            for (repeat in row until _chipArray.size) {
+                val char = _chipArray[i][j]
+
+                when {
+                    char == emptySpace -> chipsInARow = 0
+                    char == chipColor -> chipsInARow++
+                    char == freeSpace -> chipsInARow++
+                    chipColor == freeSpace && char != emptySpace -> chipsInARow++
+                    char != chipColor -> chipsInARow = 1
+                }
+
+                if (chipsInARow == 5 && chipColor.toString() == database.userColor) {
+                    sequences++
+                    break
+                }
+
+                chipColor = char
+                i++
+                j++
+            }
+        }
+
         if (sequences == 2) {
             database.winGame()
             isWinnerDeclared = true
