@@ -300,9 +300,10 @@ class GameViewModel @Inject constructor(
                     char != chipColor -> chipsInARow = 1
                 }
 
-                if (chipsInARow == 5 && chipColor.toString() == database.userColor) {
-                    sequences++
-                    break
+                if (chipColor.toString() == database.userColor) {
+                    if (chipsInARow == 5 || chipsInARow == 10) {
+                        sequences++
+                    }
                 }
 
                 chipColor = char
@@ -325,16 +326,17 @@ class GameViewModel @Inject constructor(
                     char != chipColor -> chipsInARow = 1
                 }
 
-                if (chipsInARow == 5 && chipColor.toString() == database.userColor) {
-                    sequences++
-                    break
+                if (chipColor.toString() == database.userColor) {
+                    if (chipsInARow == 5 || chipsInARow == 10) {
+                        sequences++
+                    }
                 }
 
                 chipColor = char
             }
         }
 
-        // Diagonal sequence.
+        // Diagonal sequence top-left to bottom-right, lower half.
         for (row in _chipArray.indices) {
             var chipsInARow = 0
             var chipColor = emptySpace
@@ -352,13 +354,104 @@ class GameViewModel @Inject constructor(
                     char != chipColor -> chipsInARow = 1
                 }
 
-                if (chipsInARow == 5 && chipColor.toString() == database.userColor) {
-                    sequences++
-                    break
+                if (chipColor.toString() == database.userColor) {
+                    if (chipsInARow == 5 || chipsInARow == 10) {
+                        sequences++
+                    }
                 }
 
                 chipColor = char
                 i++
+                j++
+            }
+        }
+
+        // Diagonal sequence top-left to bottom-right, upper half.
+        for (row in _chipArray.lastIndex - 1 downTo 0) {
+            var chipsInARow = 0
+            var chipColor = emptySpace
+            var i = row
+            var j = _chipArray[0].lastIndex
+
+            for (repeat in 0 until row + 1) {
+                val char = _chipArray[i][j]
+
+                when {
+                    char == emptySpace -> chipsInARow = 0
+                    char == chipColor -> chipsInARow++
+                    char == freeSpace -> chipsInARow++
+                    chipColor == freeSpace && char != emptySpace -> chipsInARow++
+                    char != chipColor -> chipsInARow = 1
+                }
+
+                if (chipColor.toString() == database.userColor) {
+                    if (chipsInARow == 5 || chipsInARow == 10) {
+                        sequences++
+                    }
+                }
+
+                chipColor = char
+                i--
+                j--
+            }
+        }
+
+        // Diagonal sequence top-right to bottom-left, upper half.
+        for (column in _chipArray[0].indices) {
+            var chipsInARow = 0
+            var chipColor = emptySpace
+            var i = 0
+            var j = column
+
+            for (repeat in 0 until column + 1) {
+                val char = _chipArray[i][j]
+
+                when {
+                    char == emptySpace -> chipsInARow = 0
+                    char == chipColor -> chipsInARow++
+                    char == freeSpace -> chipsInARow++
+                    chipColor == freeSpace && char != emptySpace -> chipsInARow++
+                    char != chipColor -> chipsInARow = 1
+                }
+
+                if (chipColor.toString() == database.userColor) {
+                    if (chipsInARow == 5 || chipsInARow == 10) {
+                        sequences++
+                    }
+                }
+
+                chipColor = char
+                i++
+                j--
+            }
+        }
+
+        // Diagonal sequence top-right to bottom-left, lower half.
+        for (column in 1 until _chipArray[0].lastIndex) {
+            var chipsInARow = 0
+            var chipColor = emptySpace
+            var i = 9
+            var j = column
+
+            for (repeat in column until _chipArray[0].lastIndex + 1) {
+                val char = _chipArray[i][j]
+
+                when {
+                    char == emptySpace -> chipsInARow = 0
+                    char == chipColor -> chipsInARow++
+                    char == freeSpace -> chipsInARow++
+                    chipColor == freeSpace && char != emptySpace -> chipsInARow++
+                    char != chipColor -> chipsInARow = 1
+                }
+
+                if (chipColor.toString() == database.userColor) {
+                    if (chipsInARow == 5 || chipsInARow == 10) {
+                        sequences++
+                    }
+                }
+
+                chipColor = char
+                i--
                 j++
             }
         }
