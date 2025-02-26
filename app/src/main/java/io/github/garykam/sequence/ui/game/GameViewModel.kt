@@ -167,7 +167,13 @@ class GameViewModel @Inject constructor(
         database.gameRef.child("moves").addValueEventListener(
             object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    _moves.update { snapshot.getValue<Map<String, String>>().orEmpty() }
+                    val moves = buildMap {
+                        for (child in snapshot.children) {
+                            put(child.key!!, child.value!! as String)
+                        }
+                    }
+
+                    _moves.update { moves }
 
                     updateChipArray()
                     checkGameOver()
