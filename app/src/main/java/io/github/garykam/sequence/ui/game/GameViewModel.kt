@@ -301,7 +301,7 @@ class GameViewModel @Inject constructor(
                 }
 
                 if (chipColor.toString() == database.userColor) {
-                    if (chipsInARow == 5 || chipsInARow == 10) {
+                    if (chipsInARow == 5 || chipsInARow == 9) {
                         sequences++
                     }
                 }
@@ -327,7 +327,7 @@ class GameViewModel @Inject constructor(
                 }
 
                 if (chipColor.toString() == database.userColor) {
-                    if (chipsInARow == 5 || chipsInARow == 10) {
+                    if (chipsInARow == 5 || chipsInARow == 9) {
                         sequences++
                     }
                 }
@@ -355,7 +355,7 @@ class GameViewModel @Inject constructor(
                 }
 
                 if (chipColor.toString() == database.userColor) {
-                    if (chipsInARow == 5 || chipsInARow == 10) {
+                    if (chipsInARow == 5 || chipsInARow == 9) {
                         sequences++
                     }
                 }
@@ -385,7 +385,7 @@ class GameViewModel @Inject constructor(
                 }
 
                 if (chipColor.toString() == database.userColor) {
-                    if (chipsInARow == 5 || chipsInARow == 10) {
+                    if (chipsInARow == 5 || chipsInARow == 9) {
                         sequences++
                     }
                 }
@@ -415,7 +415,7 @@ class GameViewModel @Inject constructor(
                 }
 
                 if (chipColor.toString() == database.userColor) {
-                    if (chipsInARow == 5 || chipsInARow == 10) {
+                    if (chipsInARow == 5 || chipsInARow == 9) {
                         sequences++
                     }
                 }
@@ -445,7 +445,7 @@ class GameViewModel @Inject constructor(
                 }
 
                 if (chipColor.toString() == database.userColor) {
-                    if (chipsInARow == 5 || chipsInARow == 10) {
+                    if (chipsInARow == 5 || chipsInARow == 9) {
                         sequences++
                     }
                 }
