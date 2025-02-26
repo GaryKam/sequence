@@ -213,6 +213,7 @@ class GameViewModel @Inject constructor(
         database.gameRef.child("winner").addValueEventListener(
             object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    isWinnerDeclared = true
                     _winner.update { snapshot.getValue<String>().orEmpty() }
                 }
 
