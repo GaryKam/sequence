@@ -13,6 +13,7 @@
     <string name="create_lobby_1_player">1/2</string>
     <string name="create_lobby_2_player">2/2</string>
     <string name="start_game">Start Game</string>
+    <string name="create_lobby_error">Connection failed</string>
 
     <!-- Join Game Screen -->
     <string name="join_lobby">Join Lobby</string>

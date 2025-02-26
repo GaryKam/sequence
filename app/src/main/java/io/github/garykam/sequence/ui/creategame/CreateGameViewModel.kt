@@ -10,8 +10,12 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.garykam.sequence.R
 import io.github.garykam.sequence.data.Database
 import io.github.garykam.sequence.util.MarkerChip
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,16 +31,26 @@ class CreateGameViewModel @Inject constructor(
     var lobbyCode by mutableStateOf("")
         private set
 
+    private var _errorId = MutableStateFlow(-1)
+    val errorId = _errorId.asStateFlow()
+
+    private lateinit var _gameListener: ValueEventListener
+
     fun selectMarkerChip(index: Int) {
         markerChipIndex = index
     }
 
-    private lateinit var _gameListener: ValueEventListener
-
     fun createLobby() {
         val charPool = ('A'..'Z') + ('0'..'9')
         val lobbyCode = List(3) { charPool.random() }.joinToString("")
-        database.createLobby(lobbyCode, MarkerChip.entries[markerChipIndex].char)
+
+        val success = database.createLobby(lobbyCode, MarkerChip.entries[markerChipIndex].char)
+
+        if (!success) {
+            _errorId.update { R.string.create_lobby_error }
+            return
+        }
+
         this.lobbyCode = lobbyCode
         step = Step.WAIT_IN_LOBBY
 
@@ -67,6 +81,10 @@ class CreateGameViewModel @Inject constructor(
         }
 
         database.removeGame()
+    }
+
+    fun hideErrorMessage() {
+        _errorId.update { -1 }
     }
 }
 

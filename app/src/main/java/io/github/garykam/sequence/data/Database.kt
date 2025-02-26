@@ -1,7 +1,10 @@
 package io.github.garykam.sequence.data
 
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.GenericTypeIndicator
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import io.github.garykam.sequence.model.Card
@@ -21,16 +24,36 @@ class Database {
 
     private val firebase = Firebase.database
 
+    private var connected = false
+
     private var _lobbyCode = ""
+
+    init {
+        firebase.getReference(".info/connected").addValueEventListener(
+            object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    connected = snapshot.getValue(Boolean::class.java) ?: false
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+            }
+        )
+    }
 
     fun createLobby(
         lobbyCode: String,
         hostColor: String
-    ) {
-        _lobbyCode = lobbyCode
-        userRole = "host"
-        userColor = hostColor
-        gameRef.setValue(Game(Host(hostColor)))
+    ): Boolean {
+        if (connected) {
+            _lobbyCode = lobbyCode
+            userRole = "host"
+            userColor = hostColor
+            gameRef.setValue(Game(Host(hostColor)))
+        }
+
+        return connected
     }
 
     fun removeGame() {
