@@ -94,14 +94,16 @@ class Database {
             .await()
             .getValue(object : GenericTypeIndicator<List<String>>() {})
             .orEmpty()
-        val newDeck = deck.toMutableList()
-        val nextCard = newDeck.removeFirstOrNull()
+            .toMutableList()
+        val nextCard = deck.removeFirstOrNull()
         val newHand = hand
             .map { it.name }
             .toMutableList()
             .apply {
                 if (nextCard != null) {
                     this[cardIndex] = nextCard
+                } else {
+                    removeAt(cardIndex)
                 }
             }
         val isChipOnCard = currentMoves.containsKey(boardIndex.toString())
@@ -115,7 +117,7 @@ class Database {
         val update = hashMapOf(
             "moves" to newMoves,
             "turn" to if (userRole == "host") "guest" else "host",
-            "deck" to newDeck,
+            "deck" to deck,
             "$userRole/hand" to newHand
         )
 
