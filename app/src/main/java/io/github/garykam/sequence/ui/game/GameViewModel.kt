@@ -32,11 +32,7 @@ class GameViewModel @Inject constructor(
         private set
 
     val card: Card?
-        get() = if (activeCardIndex != -1) {
-            _hand.value[activeCardIndex]
-        } else {
-            null
-        }
+        get() = if (activeCardIndex != -1) _hand.value[activeCardIndex] else null
 
     var isGameEnded by mutableStateOf(false)
         private set
@@ -77,6 +73,9 @@ class GameViewModel @Inject constructor(
     private var _winner = MutableStateFlow("")
     val winner = _winner.asStateFlow()
 
+    var isWinnerDeclared = false
+        private set
+
     private var _jackCards = mutableSetOf<Card>()
 
     private var _gameListeners = mutableListOf<ValueEventListener>()
@@ -99,8 +98,6 @@ class GameViewModel @Inject constructor(
         this[9][0] = freeSpace
         this[9][9] = freeSpace
     }
-
-    private var isWinnerDeclared = false
 
     @SuppressLint("DiscouragedApi")
     fun init(context: Context) {
@@ -260,6 +257,39 @@ class GameViewModel @Inject constructor(
         }
     }
 
+    fun isUserChip(markerChip: MarkerChip?): Boolean {
+        return markerChip?.char == database.userColor
+    }
+
+    fun isCardPlayable(card: Card?): Boolean {
+        if (card == null) {
+            return true
+        }
+
+        val cardIndices = _board.value.mapIndexed { index, cardOnBoard ->
+            if (cardOnBoard.name == card.name) {
+                index
+            } else {
+                null
+            }
+        }.filterNotNull()
+
+        for (index in cardIndices) {
+            if (!_moves.value.containsKey(index.toString())) {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    fun swapDeadCard() {
+        viewModelScope.launch(Dispatchers.IO) {
+            database.drawCardFromDeck(_hand.value, activeCardIndex)
+            activeCardIndex = -1
+        }
+    }
+
     fun leaveGame() {
         _gameListeners.forEach { database.gameRef.removeEventListener(it) }
         database.stopGame()
@@ -267,10 +297,6 @@ class GameViewModel @Inject constructor(
 
     fun endGame() {
         database.removeGame()
-    }
-
-    fun isUserChip(markerChip: MarkerChip?): Boolean {
-        return markerChip?.char == database.userColor
     }
 
     fun hideWinner() {

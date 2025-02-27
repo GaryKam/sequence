@@ -29,6 +29,7 @@
     <string name="opponent_turn">Opponent\'s Turn</string>
     <string name="one_eyed_jack_text">Remove an opponent\'s chip</string>
     <string name="two_eyed_jack_text">Place a chip on any open card</string>
+    <string name="swap_card">Swap the dead card</string>
     <string name="quit_game">Quit</string>
     <string name="quit_game_text">Do you want to leave this game?</string>
     <string name="yes">Yes</string>

@@ -149,6 +149,36 @@ class Database {
         gameRef.updateChildren(update)
     }
 
+    suspend fun drawCardFromDeck(
+        hand: List<Card>,
+        cardIndex: Int
+    ) {
+        val deck = gameRef.child("deck")
+            .get()
+            .await()
+            .getValue(object : GenericTypeIndicator<List<String>>() {})
+            .orEmpty()
+            .toMutableList()
+        val nextCard = deck.removeFirstOrNull()
+        val newHand = hand
+            .map { it.name }
+            .toMutableList()
+            .apply {
+                if (nextCard != null) {
+                    this[cardIndex] = nextCard
+                } else {
+                    removeAt(cardIndex)
+                }
+            }
+
+        val update = hashMapOf(
+            "deck" to deck,
+            "$userRole/hand" to newHand
+        )
+
+        gameRef.updateChildren(update as Map<String, Any>)
+    }
+
     fun winGame() {
         gameRef.child("winner").setValue(userRole)
     }
