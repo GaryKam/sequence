@@ -213,8 +213,13 @@ class GameViewModel @Inject constructor(
         database.gameRef.child("winner").addValueEventListener(
             object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    isWinnerDeclared = true
-                    _winner.update { snapshot.getValue<String>().orEmpty() }
+                    val winner = snapshot.getValue<String>().orEmpty()
+
+                    _winner.update { winner }
+
+                    if (winner.isNotEmpty()) {
+                        isWinnerDeclared = true
+                    }
                 }
 
                 override fun onCancelled(error: DatabaseError) {

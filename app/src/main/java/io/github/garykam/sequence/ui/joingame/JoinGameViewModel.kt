@@ -13,9 +13,13 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.garykam.sequence.R
 import io.github.garykam.sequence.data.Database
 import io.github.garykam.sequence.util.MarkerChip
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,6 +42,9 @@ class JoinGameViewModel @Inject constructor(
     var isLobbyClosed by mutableStateOf(false)
         private set
 
+    private var _errorId = MutableStateFlow(-1)
+    val errorId = _errorId.asStateFlow()
+
     private lateinit var _gameListener: ValueEventListener
 
     fun updateLobbyCode(code: String) {
@@ -51,8 +58,14 @@ class JoinGameViewModel @Inject constructor(
             return
         }
 
+        if (!database.connected) {
+            _errorId.update { R.string.join_lobby_error }
+            return
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
             if (!database.findLobby(lobbyCode)) {
+                _errorId.update { R.string.join_lobby_wrong }
                 return@launch
             }
 
@@ -117,6 +130,10 @@ class JoinGameViewModel @Inject constructor(
         }
 
         database.leaveLobby()
+    }
+
+    fun hideErrorMessage() {
+        _errorId.update { -1 }
     }
 }
 

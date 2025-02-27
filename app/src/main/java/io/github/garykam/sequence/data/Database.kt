@@ -1,5 +1,6 @@
 package io.github.garykam.sequence.data
 
+import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -24,7 +25,8 @@ class Database {
 
     private val firebase = Firebase.database
 
-    private var connected = false
+    var connected = false
+        private set
 
     private var _lobbyCode = ""
 
@@ -36,7 +38,7 @@ class Database {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
+                    Log.d("Database", error.toString())
                 }
             }
         )

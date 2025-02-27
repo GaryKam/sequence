@@ -21,6 +21,8 @@
     <string name="join_lobby_wait">Waiting for host…</string>
     <string name="lobby_closed">Lobby Closed</string>
     <string name="lobby_closed_text">The host left the lobby.</string>
+    <string name="join_lobby_wrong">Invalid lobby code</string>
+    <string name="join_lobby_error">Connection failed</string>
 
     <!-- Game Screen -->
     <string name="user_turn">Your Turn</string>
